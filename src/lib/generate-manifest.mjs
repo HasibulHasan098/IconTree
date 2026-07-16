@@ -6,7 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ICONS_DIR = join(__dirname, '..', '..', 'public', 'icons');
 const OUTPUT_FILE = join(__dirname, 'manifest.json');
 
-const CATEGORY_MAP: Record<string, string> = {
+const CATEGORY_MAP = {
   'arrow': 'navigation',
   'arrows': 'navigation',
   'add': 'action',
@@ -80,7 +80,7 @@ const CATEGORY_MAP: Record<string, string> = {
   'archive': 'file',
 };
 
-function deriveCategory(name: string): string {
+function deriveCategory(name) {
   const lower = name.toLowerCase();
   for (const [keyword, category] of Object.entries(CATEGORY_MAP)) {
     if (lower.includes(keyword)) return category;
@@ -88,16 +88,16 @@ function deriveCategory(name: string): string {
   return 'general';
 }
 
-function deriveTags(name: string): string[] {
+function deriveTags(name) {
   const parts = name.toLowerCase().replace(/[()]/g, '').split('-').filter(Boolean);
-  const tags = new Set<string>();
+  const tags = new Set();
   for (const part of parts) {
     if (part.length > 1) tags.add(part);
   }
   return Array.from(tags);
 }
 
-function generateManifest(): void {
+function generateManifest() {
   if (!existsSync(ICONS_DIR)) {
     console.error(`Icons directory not found: ${ICONS_DIR}`);
     process.exit(1);
@@ -109,7 +109,7 @@ function generateManifest(): void {
     const cleanName = baseName.replace(/^iconsax-/, '');
     const size = statSync(join(ICONS_DIR, filename)).size;
     const slug = cleanName.replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').toLowerCase();
-    
+
     return {
       name: cleanName,
       slug,
