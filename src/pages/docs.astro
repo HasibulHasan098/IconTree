@@ -1,0 +1,306 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getManifest } from '../lib/manifest';
+
+const manifest = getManifest();
+const baseUrl = 'https://icontree.workers.dev';
+
+const searchResponseExample = `GET ${baseUrl}/icon/search?q=arrow&page=1&pageSize=20
+
+{
+  "query": "arrow",
+  "category": "",
+  "count": 12,
+  "results": [
+    {
+      "name": "arrow-right-bold",
+      "slug": "arrow-right-bold",
+      "filename": "arrow-right-bold.json",
+      "tags": ["arrow", "direction", "ui"],
+      "category": "navigation",
+      "size": 1583,
+      "url": "/icon/use/arrow-right-bold.json"
+    }
+  ]
+}`;
+
+const androidSetupExample = `// settings.gradle / build.gradle
+// Add the current Lottie Android dependency for your project.
+implementation("com.airbnb.android:lottie:<latest-version>")`;
+
+const androidExample = `suspend fun loadIconTreeAnimation(query: String): String? {
+    val searchUrl = "${baseUrl}/icon/search?q=$" + "{URLEncoder.encode(query, "UTF-8")}&page=1&pageSize=20"
+    val searchText = URL(searchUrl).readText()
+    val searchJson = JSONObject(searchText)
+    val results = searchJson.getJSONArray("results")
+
+    if (results.length() == 0) return null
+
+    val first = results.getJSONObject(0)
+    return "${baseUrl}$" + "{first.getString("url")}"
+}
+
+// Then pass the returned URL to Lottie:
+// lottieView.setAnimationFromUrl(iconUrl)`;
+
+const jsExample = `const search = await fetch(
+  "${baseUrl}/icon/search?q=arrow&page=1&pageSize=20"
+).then((r) => r.json());
+
+const firstIcon = search.results[0];
+const animationData = await fetch("${baseUrl}" + firstIcon.url).then((r) => r.json());
+
+lottie.loadAnimation({
+  container: document.getElementById("icon"),
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+  animationData,
+});`;
+
+const reactExample = `import { useEffect, useRef } from "react";
+import lottie from "lottie-web";
+
+export function IconTreePreview({ slug }) {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    let animation;
+
+    async function load() {
+      const data = await fetch("${baseUrl}/icon/use/" + slug + ".json").then((r) => r.json());
+
+      animation = lottie.loadAnimation({
+        container: containerRef.current,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+        animationData: data,
+      });
+    }
+
+    load();
+    return () => animation?.destroy();
+  }, [slug]);
+
+  return <div ref={containerRef} style={{ width: 32, height: 32 }} />;
+}`;
+
+const nodeExample = `const response = await fetch(
+  "${baseUrl}/icon/search?q=mail&category=communication&page=1&pageSize=20"
+);
+const data = await response.json();
+
+console.log(data.results.map((icon) => ({
+  name: icon.name,
+  jsonUrl: "${baseUrl}" + icon.url,
+})));`;
+
+const pythonExample = `import requests
+
+search = requests.get(
+    "${baseUrl}/icon/search",
+    params={"q": "search", "page": 1, "pageSize": 20},
+).json()
+
+if search["results"]:
+    first = search["results"][0]
+    icon_json = requests.get("${baseUrl}" + first["url"]).json()
+    print(first["name"], icon_json["v"])`;
+
+const curlExample = `curl "${baseUrl}/icon/search?q=arrow&page=1&pageSize=20"`;
+
+const androidManualExample = `// Put the file in:
+// app/src/main/assets/lottie/arrow-right-bold.json
+
+lottieView.setAnimation("lottie/arrow-right-bold.json")
+lottieView.playAnimation()`;
+
+const reactManualExample = `import lottie from "lottie-web";
+import animationData from "./lottie/arrow-right-bold.json";
+
+lottie.loadAnimation({
+  container: document.getElementById("icon"),
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+  animationData,
+});`;
+
+const manualSteps = `Manual mode means:
+1. Pick an icon on IconTree
+2. Download or copy its .json file
+3. Save it inside your app project
+4. Load that local file with your platform's Lottie player
+
+Use manual mode when you already know which icons you want and do not need runtime search.`;
+---
+
+<Layout title="IconTree - Docs">
+  <div class="doc-content doc-content-wide">
+    <div class="doc-nav">
+      <a href="/" class="back-link">&lt; Back</a>
+    </div>
+
+    <section class="doc-hero">
+      <span class="doc-kicker">Docs</span>
+      <h1>IconTree Integration Docs</h1>
+      <p class="doc-lead">
+        These docs are for actually using IconTree in your app. Search icons, fetch the JSON, then render it with
+        your platform’s Lottie player.
+      </p>
+    </section>
+
+    <section class="doc-callout">
+      <p><strong>Base URL</strong></p>
+      <pre><code>{baseUrl}</code></pre>
+      <p>
+        Search returns a relative <code>url</code> like <code>/icon/use/arrow-right-bold.json</code>.
+        Build the full JSON URL with <code>{baseUrl} + result.url</code>.
+      </p>
+    </section>
+
+    <h2>How IconTree Works</h2>
+    <ol>
+      <li>Search the library with <code>/icon/search</code>.</li>
+      <li>Pick one item from <code>results[]</code>.</li>
+      <li>Take that item’s <code>url</code>.</li>
+      <li>Fetch the raw JSON from <code>{baseUrl} + result.url</code>.</li>
+      <li>Render it with a Lottie player.</li>
+    </ol>
+
+    <h2>Manual Use Without API</h2>
+    <p>
+      You do not have to call the API if you already know which icons you want. You can download the JSON files once
+      and keep them inside your app.
+    </p>
+    <pre><code>{manualSteps}</code></pre>
+
+    <div class="lang-grid">
+      <section class="lang-card">
+        <h3>Android Manual</h3>
+        <p>Store the JSON file in your app assets folder, then load it directly into <code>LottieAnimationView</code>.</p>
+        <pre><code>{androidManualExample}</code></pre>
+      </section>
+
+      <section class="lang-card">
+        <h3>React / Web Manual</h3>
+        <p>Import the downloaded JSON file into your app and pass it straight to <code>lottie-web</code>.</p>
+        <pre><code>{reactManualExample}</code></pre>
+      </section>
+    </div>
+
+    <h2>Search Response Shape</h2>
+    <pre><code>{searchResponseExample}</code></pre>
+
+    <h2>Endpoint Reference</h2>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method">GET</span>
+        <span class="endpoint-path">/icon/search</span>
+      </div>
+      <p>Search by icon name, tags, or category.</p>
+      <ul>
+        <li><code>q</code> - Search text.</li>
+        <li><code>category</code> - Optional category filter.</li>
+        <li><code>page</code> - Page number.</li>
+        <li><code>pageSize</code> - Batch size. Use <code>20</code> for scrolling UIs.</li>
+      </ul>
+    </div>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method">GET</span>
+        <span class="endpoint-path">/icon/use/&lt;iconname&gt;.json</span>
+      </div>
+      <p>Returns the raw Lottie JSON for one icon.</p>
+    </div>
+
+    <h2>Platform Guides</h2>
+
+    <div class="lang-grid">
+      <section class="lang-card">
+        <h3>Android</h3>
+        <p>Add a Lottie Android dependency, search IconTree, then load the returned JSON URL into your Lottie view.</p>
+        <pre><code>{androidSetupExample}</code></pre>
+        <pre><code>{androidExample}</code></pre>
+      </section>
+
+      <section class="lang-card">
+        <h3>JavaScript</h3>
+        <p>Search the API, fetch the raw JSON, and hand it to <code>lottie-web</code> with the SVG renderer.</p>
+        <pre><code>{jsExample}</code></pre>
+      </section>
+
+      <section class="lang-card">
+        <h3>React</h3>
+        <p>Fetch the icon JSON inside an effect and destroy the animation on unmount.</p>
+        <pre><code>{reactExample}</code></pre>
+      </section>
+
+      <section class="lang-card">
+        <h3>Node.js</h3>
+        <p>Useful for server-side search, tooling, CMS integrations, or icon picking workflows.</p>
+        <pre><code>{nodeExample}</code></pre>
+      </section>
+
+      <section class="lang-card">
+        <h3>Python</h3>
+        <p>Good for scripts, backend workflows, dataset generation, or asset prep pipelines.</p>
+        <pre><code>{pythonExample}</code></pre>
+      </section>
+
+      <section class="lang-card">
+        <h3>curl</h3>
+        <p>Use this for quick testing before wiring the API into your app.</p>
+        <pre><code>{curlExample}</code></pre>
+      </section>
+    </div>
+
+    <h2>Best Practices</h2>
+    <ul>
+      <li>Use manual mode when the icons are fixed and bundled with the app.</li>
+      <li>Use API mode when users need search, remote loading, or dynamic icon lists.</li>
+      <li>Use <code>pageSize=20</code> for infinite-scroll icon pickers.</li>
+      <li>Keep the original <code>name</code> and <code>slug</code> returned by the API.</li>
+      <li>Render with <code>renderer: 'svg'</code> for crisp UI icons.</li>
+      <li>Cache fetched icon JSON where possible. Responses are immutable per build.</li>
+      <li>If search returns no results, try a broader query or remove the category filter.</li>
+    </ul>
+
+    <p style="margin-top: 48px; color: var(--color-text-muted); font-size: 0.875rem;">
+      IconTree v1 · {manifest.total.toLocaleString()} icons available
+    </p>
+  </div>
+
+  <script>
+    (function() {
+      const preBlocks = Array.from(document.querySelectorAll('.doc-content pre')) as HTMLElement[];
+
+      preBlocks.forEach((pre: HTMLElement) => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-snippet-btn';
+        btn.textContent = 'Copy';
+        btn.type = 'button';
+        pre.style.position = 'relative';
+        pre.appendChild(btn);
+
+        btn.addEventListener('click', () => {
+          const code = pre.querySelector('code');
+          const text = code?.textContent || '';
+
+          navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+
+            setTimeout(() => {
+              btn.textContent = 'Copy';
+              btn.classList.remove('copied');
+            }, 2000);
+          });
+        });
+      });
+    })();
+  </script>
+</Layout>

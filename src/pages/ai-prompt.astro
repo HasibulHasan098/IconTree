@@ -1,0 +1,119 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const baseUrl = 'https://icontree.workers.dev';
+
+const promptText = `Use IconTree inside an existing app.
+
+Important:
+- Do not build a new icon library website
+- Do not build a new icon marketplace
+- Do not recreate IconTree itself
+- Only integrate IconTree icons into the current app or screen
+
+IconTree base URL:
+${baseUrl}
+
+Two valid ways to use IconTree:
+1. API mode
+   - Search icons with GET ${baseUrl}/icon/search
+   - Use query params: q, category, page, pageSize
+   - Read icons from response.results
+   - Each result.url is a relative path
+   - Build the full JSON URL as ${baseUrl} + result.url
+   - Fetch that JSON and render it with a Lottie player
+
+2. Manual mode
+   - Assume the chosen .json icon files are already downloaded into the app
+   - Load those local JSON files from assets, public, raw, or bundle resources
+   - Render them with the platform’s Lottie player
+
+Rules for the implementation:
+- Integrate into the existing app structure
+- Keep the current design system and layout
+- Do not invent extra API fields
+- Use SVG rendering when possible on web
+- Show only the code needed for this app feature
+- If the request is for a local/manual setup, do not add search UI or remote API calls
+
+Return production-ready integration code only.`;
+---
+
+<Layout title="IconTree - AI Prompt">
+  <div class="doc-content doc-content-wide prompt-shell">
+    <div class="doc-nav">
+      <a href="/" class="back-link">&lt; Back</a>
+    </div>
+
+    <section class="doc-hero">
+      <span class="doc-kicker">AI Prompt</span>
+      <h1>One Prompt to Use IconTree</h1>
+      <p class="doc-lead">
+        This prompt is for adding IconTree icons into an existing app, not for building a new icon library.
+      </p>
+    </section>
+
+    <section class="prompt-card">
+      <h3>Prompt</h3>
+      <p>Copy this prompt into your AI tool when you want it to build or integrate IconTree correctly.</p>
+      <pre><code>{promptText}</code></pre>
+    </section>
+
+    <section class="lang-grid" aria-label="Prompt guidance">
+      <article class="lang-card">
+        <h3>Structure</h3>
+        <p>
+          The prompt tells the AI three things clearly: use the existing app, choose API or manual mode, and only
+          write integration code for that app feature.
+        </p>
+      </article>
+
+      <article class="lang-card">
+        <h3>How to Add It</h3>
+        <p>
+          Paste the prompt first, then add one short line about your stack and target screen, like “Use React on the
+          settings page” or “Use Android Kotlin in the onboarding screen”.
+        </p>
+      </article>
+    </section>
+
+    <section class="doc-callout">
+      <p><strong>Example add-on lines</strong></p>
+      <ul class="prompt-list">
+        <li><code>Use React and Tailwind.</code></li>
+        <li><code>Use Android Kotlin with a LottieAnimationView.</code></li>
+        <li><code>Use manual local JSON files, not remote API calls.</code></li>
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    (function() {
+      const preBlocks = Array.from(document.querySelectorAll('.doc-content pre')) as HTMLElement[];
+
+      preBlocks.forEach((pre: HTMLElement) => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-snippet-btn';
+        btn.textContent = 'Copy';
+        btn.type = 'button';
+        pre.style.position = 'relative';
+        pre.appendChild(btn);
+
+        btn.addEventListener('click', () => {
+          const code = pre.querySelector('code');
+          const text = code?.textContent || '';
+
+          navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+
+            setTimeout(() => {
+              btn.textContent = 'Copy';
+              btn.classList.remove('copied');
+            }, 2000);
+          });
+        });
+      });
+    })();
+  </script>
+</Layout>

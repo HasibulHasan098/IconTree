@@ -1,0 +1,67 @@
+---
+import IconPlayer from './IconPlayer.astro';
+
+interface Props {
+  name: string;
+  slug: string;
+  url: string;
+}
+
+const { name, slug, url } = Astro.props;
+---
+
+<div class="icon-card" tabindex="0" role="button" aria-label={`Copy ${name} JSON`}>
+  <IconPlayer slug={slug} url={url} name={name} />
+  <button class="copy-btn" aria-label="Copy JSON" title="Copy JSON">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  </button>
+  <span class="icon-name">{name}</span>
+</div>
+
+<script>
+  (function() {
+    const cards = Array.from(document.querySelectorAll('.icon-card')) as HTMLElement[];
+
+    cards.forEach((card: HTMLElement) => {
+      const btn = card.querySelector('.copy-btn') as HTMLElement | null;
+
+      async function copyJson(e: Event): Promise<void> {
+        e.stopPropagation();
+        try {
+          const url = card.querySelector('.icon-preview')?.getAttribute('data-url');
+          if (!url) return;
+
+          const response = await fetch(url);
+          const text = await response.text();
+          await navigator.clipboard.writeText(text);
+
+          if (btn) {
+            btn.classList.add('copied');
+            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+          }
+
+          setTimeout(() => {
+            if (btn) {
+              btn.classList.remove('copied');
+              btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+            }
+          }, 2000);
+        } catch (e) {
+          console.error('Failed to copy:', e);
+        }
+      }
+
+      btn?.addEventListener('click', (e: Event) => copyJson(e));
+
+      card.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          copyJson(e);
+        }
+      });
+    });
+  })();
+</script>

@@ -1,0 +1,313 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getManifest } from '../lib/manifest';
+import IconCard from '../components/IconCard.astro';
+import SearchBar from '../components/SearchBar.astro';
+import FilterChips from '../components/FilterChips.astro';
+
+const manifest = getManifest();
+const categoryCounts = manifest.icons.reduce<Record<string, number>>((acc, icon) => {
+  acc[icon.category] = (acc[icon.category] || 0) + 1;
+  return acc;
+}, {});
+
+const categories = Object.entries(categoryCounts)
+  .map(([name, count]) => {
+    const sampleIcon = manifest.icons.find(icon => icon.category === name);
+    return {
+      name,
+      count,
+      iconUrl: sampleIcon?.url,
+      iconSlug: sampleIcon?.slug,
+      iconName: sampleIcon?.name,
+    };
+  })
+  .sort((a, b) => b.count - a.count);
+
+const PAGE_SIZE = 100;
+const initialIcons = manifest.icons.slice(0, PAGE_SIZE);
+const allIcon = manifest.icons[0];
+const allIconsJson = JSON.stringify(manifest.icons);
+---
+
+<Layout title="IconTree - Animated Icon Library">
+  <header class="page-header">
+    <div class="container">
+      <h1>IconTree</h1>
+      <p>{manifest.total.toLocaleString()} animated Lottie icons - search, preview, copy.</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <SearchBar />
+
+      <FilterChips
+        categories={categories}
+        total={manifest.total}
+        allIcon={allIcon ? { url: allIcon.url, slug: allIcon.slug, name: allIcon.name } : undefined}
+      />
+
+      <div id="icon-grid" class="icon-grid">
+        {initialIcons.map(icon => (
+          <IconCard name={icon.name} slug={icon.slug} url={icon.url} />
+        ))}
+      </div>
+      <div id="scroll-sentinel" class="scroll-sentinel" aria-hidden="true"></div>
+
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <h3>No icons found</h3>
+        <p>Try a different search term or clear your filters.</p>
+      </div>
+    </div>
+  </main>
+
+  <script is:inline define:vars={{ allIconsData: allIconsJson }}>
+    window.__ICON_MANIFEST__ = JSON.parse(allIconsData);
+  </script>
+
+  <script>
+    (function() {
+      const ALL_ICONS = (window.__ICON_MANIFEST__ || []) as Array<{ name: string; slug: string; url: string; tags: string[]; category: string }>;
+      const grid = document.getElementById('icon-grid');
+      const emptyState = document.getElementById('empty-state');
+      const scrollSentinel = document.getElementById('scroll-sentinel');
+      const PAGE_SIZE = 100;
+      let currentQuery = '';
+      let currentCategory = '';
+      let currentPage = 1;
+      let filteredIcons: Array<{ name: string; slug: string; url: string }> = ALL_ICONS.slice();
+      let loadedCount = grid ? grid.children.length : 0;
+      let hasMore = loadedCount < filteredIcons.length;
+      let isLoading = false;
+
+      function getFilteredIcons(): Array<{ name: string; slug: string; url: string }> {
+        const q = currentQuery.toLowerCase().trim();
+        let list = ALL_ICONS;
+        if (currentCategory) {
+          list = list.filter(icon => icon.category === currentCategory);
+        }
+        if (q) {
+          list = list.filter(icon =>
+            icon.name.toLowerCase().includes(q) ||
+            (icon.tags || []).some(t => t.toLowerCase().includes(q)) ||
+            icon.category.toLowerCase().includes(q)
+          );
+        }
+        return list;
+      }
+
+      function fetchIcons(page: number): { count: number; results: Array<{ name: string; slug: string; url: string }> } {
+        const start = (page - 1) * PAGE_SIZE;
+        const results = filteredIcons.slice(start, start + PAGE_SIZE);
+        return { count: filteredIcons.length, results };
+      }
+
+      function createIconMarkup(icon: { name: string; slug: string; url: string }) {
+        return `
+          <div class="icon-card" tabindex="0" role="button" aria-label="Copy ${icon.name} JSON">
+            <div class="icon-preview" data-slug="${icon.slug}" data-url="${icon.url}" data-name="${icon.name}" role="img" aria-label="${icon.name} animation preview"></div>
+            <button class="copy-btn" aria-label="Copy JSON" title="Copy JSON">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+            </button>
+            <span class="icon-name">${icon.name}</span>
+          </div>
+        `;
+      }
+
+      function updateScrollState() {
+        if (!scrollSentinel) return;
+        scrollSentinel.style.display = hasMore ? 'block' : 'none';
+      }
+
+      function renderIcons(icons: Array<{ name: string; slug: string; url: string }>, replace = true) {
+        if (!grid) return;
+
+        if (icons.length === 0) {
+          grid.style.display = 'none';
+          grid.innerHTML = '';
+          if (emptyState) emptyState.style.display = 'block';
+          loadedCount = 0;
+          hasMore = false;
+          updateScrollState();
+          return;
+        }
+
+        grid.style.display = 'grid';
+        if (emptyState) emptyState.style.display = 'none';
+
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = icons.map(createIconMarkup).join('');
+        const newCards = Array.from(wrapper.children) as HTMLElement[];
+
+        if (replace) {
+          grid.innerHTML = '';
+        }
+
+        newCards.forEach((card) => grid.appendChild(card));
+        loadedCount = grid.children.length;
+        setupCardInteractions(newCards);
+        hasMore = loadedCount < filteredIcons.length;
+        updateScrollState();
+      }
+
+      function setupCardInteractions(cards: HTMLElement[]) {
+        cards.forEach((card: HTMLElement) => {
+          if (card.dataset.enhanced === 'true') return;
+          card.dataset.enhanced = 'true';
+
+          const btn = card.querySelector('.copy-btn') as HTMLElement | null;
+          const preview = card.querySelector('.icon-preview') as HTMLElement | null;
+          const url = preview?.getAttribute('data-url') || '';
+          let animation: any = null;
+          let loaded = false;
+          let stage: HTMLDivElement | null = null;
+
+          async function loadAnimation(container: HTMLElement): Promise<void> {
+            if (loaded || !url) return;
+
+            while (!(window as any).lottie) {
+              await new Promise(r => setTimeout(r, 50));
+            }
+
+            loaded = true;
+
+            stage = document.createElement('div');
+            stage.className = 'icon-preview-stage';
+            container.appendChild(stage);
+
+            try {
+              const response = await fetch(url);
+              const data = await response.json();
+
+              animation = (window as any).lottie.loadAnimation({
+                container: stage,
+                renderer: 'svg',
+                loop: true,
+                autoplay: true,
+                animationData: data,
+                rendererSettings: {
+                  preserveAspectRatio: 'xMidYMid meet',
+                  progressiveLoad: true,
+                }
+              });
+            } catch (e) {
+              loaded = false;
+              if (stage?.parentNode) stage.parentNode.removeChild(stage);
+              stage = null;
+            }
+          }
+
+          function stopAnimation(container: HTMLElement): void {
+            if (animation) {
+              animation.stop();
+              animation.destroy();
+              animation = null;
+            }
+            loaded = false;
+
+            const currentStage = stage ?? container.querySelector('.icon-preview-stage');
+            if (currentStage && currentStage.parentNode) currentStage.parentNode.removeChild(currentStage);
+            stage = null;
+          }
+
+          preview?.addEventListener('mouseenter', () => loadAnimation(preview));
+          preview?.addEventListener('focus', () => loadAnimation(preview));
+
+          const io = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                loadAnimation(preview);
+              } else {
+                stopAnimation(preview);
+              }
+            });
+          }, { rootMargin: '0px', threshold: 0.1 });
+
+          io.observe(preview);
+
+          async function copyJson(e: Event): Promise<void> {
+            e.stopPropagation();
+            try {
+              const response = await fetch(url);
+              const text = await response.text();
+              await navigator.clipboard.writeText(text);
+
+              if (btn) {
+                btn.classList.add('copied');
+                btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+              }
+
+              setTimeout(() => {
+                if (btn) {
+                  btn.classList.remove('copied');
+                  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+                }
+              }, 2000);
+            } catch (e) {
+              console.error('Failed to copy:', e);
+            }
+          }
+
+          btn?.addEventListener('click', (e: Event) => copyJson(e));
+          card.addEventListener('keydown', (e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              copyJson(e);
+            }
+          });
+        });
+      }
+
+      async function loadPage(page: number, replace = true) {
+        if (isLoading) return;
+
+        isLoading = true;
+
+        try {
+          const data = fetchIcons(page);
+          currentPage = page;
+          renderIcons(data.results, replace);
+        } catch (e) {
+          console.error('Failed to load icons:', e);
+        } finally {
+          isLoading = false;
+        }
+      }
+
+      async function loadNextPage() {
+        if (!hasMore || isLoading) return;
+        await loadPage(currentPage + 1, false);
+      }
+
+      const scrollObserver = scrollSentinel ? new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            loadNextPage();
+          }
+        });
+      }, { rootMargin: '260px 0px', threshold: 0.01 }) : null;
+
+      if (scrollObserver && scrollSentinel) {
+        scrollObserver.observe(scrollSentinel);
+      }
+
+      updateScrollState();
+
+      window.addEventListener('iconsearch', async (e: any) => {
+        currentQuery = e.detail;
+        filteredIcons = getFilteredIcons();
+        await loadPage(1, true);
+      });
+
+      window.addEventListener('iconfilter', async (e: any) => {
+        currentCategory = e.detail;
+        filteredIcons = getFilteredIcons();
+        await loadPage(1, true);
+      });
+    })();
+  </script>
+</Layout>

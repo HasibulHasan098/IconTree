@@ -1,0 +1,1312 @@
+{
+  "v": "5.5.3",
+  "fr": 25,
+  "ip": 0,
+  "op": 40,
+  "w": 25,
+  "h": 25,
+  "nm": "Comp 1",
+  "ddd": 0,
+  "assets": [],
+  "layers": [
+    {
+      "ddd": 0,
+      "ind": 40,
+      "ty": 4,
+      "nm": "Layer 5 Outlines",
+      "sr": 1,
+      "ks": {
+        "o": {
+          "a": 0,
+          "k": 100,
+          "ix": 11
+        },
+        "r": {
+          "a": 0,
+          "k": 0,
+          "ix": 10
+        },
+        "p": {
+          "a": 0,
+          "k": [
+            12.512,
+            13.083,
+            0
+          ],
+          "ix": 2
+        },
+        "a": {
+          "a": 0,
+          "k": [
+            11.25,
+            7.5,
+            0
+          ],
+          "ix": 1
+        },
+        "s": {
+          "a": 0,
+          "k": [
+            87.473,
+            87.473,
+            100
+          ],
+          "ix": 6
+        }
+      },
+      "ao": 0,
+      "ef": [
+        {
+          "ty": 5,
+          "nm": "Elastic Controller",
+          "np": 5,
+          "mn": "Pseudo/MDS Elastic Controller",
+          "ix": 1,
+          "en": 1,
+          "ef": [
+            {
+              "ty": 0,
+              "nm": "Amplitude",
+              "mn": "Pseudo/MDS Elastic Controller-0001",
+              "ix": 1,
+              "v": {
+                "a": 0,
+                "k": 20,
+                "ix": 1
+              }
+            },
+            {
+              "ty": 0,
+              "nm": "Frequency",
+              "mn": "Pseudo/MDS Elastic Controller-0002",
+              "ix": 2,
+              "v": {
+                "a": 0,
+                "k": 40,
+                "ix": 2
+              }
+            },
+            {
+              "ty": 0,
+              "nm": "Decay",
+              "mn": "Pseudo/MDS Elastic Controller-0003",
+              "ix": 3,
+              "v": {
+                "a": 0,
+                "k": 60,
+                "ix": 3
+              }
+            }
+          ]
+        }
+      ],
+      "shapes": [
+        {
+          "ty": "gr",
+          "it": [
+            {
+              "ind": 0,
+              "ty": "sh",
+              "ix": 1,
+              "ks": {
+                "a": 0,
+                "k": {
+                  "i": [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ],
+                  "o": [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ],
+                  "v": [
+                    [
+                      0.75,
+                      10
+                    ],
+                    [
+                      0.75,
+                      5
+                    ]
+                  ],
+                  "c": false
+                },
+                "ix": 2
+              },
+              "nm": "Path 1",
+              "mn": "ADBE Vector Shape - Group",
+              "hd": false
+            },
+            {
+              "ty": "st",
+              "c": {
+                "a": 0,
+                "k": [
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "ix": 3
+              },
+              "o": {
+                "a": 0,
+                "k": 100,
+                "ix": 4
+              },
+              "w": {
+                "a": 0,
+                "k": 1.5,
+                "ix": 5
+              },
+              "lc": 2,
+              "lj": 2,
+              "bm": 0,
+              "nm": "Stroke 1",
+              "mn": "ADBE Vector Graphic - Stroke",
+              "hd": false
+            },
+            {
+              "ty": "tr",
+              "p": {
+                "a": 1,
+                "k": [
+                  {
+                    "i": {
+                      "x": 0.667,
+                      "y": 1
+                    },
+                    "o": {
+                      "x": 0.333,
+                      "y": 0
+                    },
+                    "t": 10,
+                    "s": [
+                      0,
+                      0
+                    ],
+                    "to": [
+                      3.497,
+                      0
+                    ],
+                    "ti": [
+                      -3.497,
+                      0
+                    ]
+                  },
+                  {
+                    "t": 25,
+                    "s": [
+                      20.981,
+                      0
+                    ]
+                  }
+                ],
+                "ix": 2
+              },
+              "a": {
+                "a": 0,
+                "k": [
+                  0,
+                  0
+                ],
+                "ix": 1
+              },
+              "s": {
+                "a": 0,
+                "k": [
+                  100,
+                  100
+                ],
+                "ix": 3
+              },
+              "r": {
+                "a": 0,
+                "k": 0,
+                "ix": 6
+              },
+              "o": {
+                "a": 0,
+                "k": 100,
+                "ix": 7
+              },
+              "sk": {
+                "a": 0,
+                "k": 0,
+                "ix": 4
+              },
+              "sa": {
+                "a": 0,
+                "k": 0,
+                "ix": 5
+              },
+              "nm": "Transform"
+            }
+          ],
+          "nm": "Group 1",
+          "np": 2,
+          "cix": 2,
+          "bm": 0,
+          "ix": 1,
+          "mn": "ADBE Vector Group",
+          "hd": false
+        },
+        {
+          "ty": "gr",
+          "it": [
+            {
+              "ind": 0,
+              "ty": "sh",
+              "ix": 1,
+              "ks": {
+                "a": 0,
+                "k": {
+                  "i": [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ],
+                  "o": [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ],
+                  "v": [
+                    [
+                      21.75,
+                      10
+                    ],
+                    [
+                      21.75,
+                      5
+                    ]
+                  ],
+                  "c": false
+                },
+                "ix": 2
+              },
+              "nm": "Path 1",
+              "mn": "ADBE Vector Shape - Group",
+              "hd": false
+            },
+            {
+              "ty": "st",
+              "c": {
+                "a": 0,
+                "k": [
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "ix": 3
+              },
+              "o": {
+                "a": 0,
+                "k": 100,
+                "ix": 4
+              },
+              "w": {
+                "a": 0,
+                "k": 1.5,
+                "ix": 5
+              },
+              "lc": 2,
+              "lj": 2,
+              "bm": 0,
+              "nm": "Stroke 1",
+              "mn": "ADBE Vector Graphic - Stroke",
+              "hd": false
+            },
+            {
+              "ty": "tr",
+              "p": {
+                "a": 1,
+                "k": [
+                  {
+                    "i": {
+                      "x": 0.667,
+                      "y": 1
+                    },
+                    "o": {
+                      "x": 0.333,
+                      "y": 0
+                    },
+                    "t": 10,
+                    "s": [
+                      0,
+                      0
+                    ],
+                    "to": [
+                      -3.5,
+                      0
+                    ],
+                    "ti": [
+                      3.5,
+                      0
+                    ]
+                  },
+                  {
+                    "t": 25,
+                    "s": [
+                      -21,
+                      0
+                    ]
+                  }
+                ],
+                "ix": 2
+              },
+              "a": {
+                "a": 0,
+                "k": [
+                  0,
+                  0
+                ],
+                "ix": 1
+              },
+              "s": {
+                "a": 0,
+                "k": [
+                  100,
+                  100
+                ],
+                "ix": 3
+              },
+              "r": {
+                "a": 0,
+                "k": 0,
+                "ix": 6
+              },
+              "o": {
+                "a": 0,
+                "k": 100,
+                "ix": 7
+              },
+              "sk": {
+                "a": 0,
+                "k": 0,
+                "ix": 4
+              },
+              "sa": {
+                "a": 0,
+                "k": 0,
+                "ix": 5
+              },
+              "nm": "Transform"
+            }
+          ],
+          "nm": "Group 2",
+          "np": 2,
+          "cix": 2,
+          "bm": 0,
+          "ix": 2,
+          "mn": "ADBE Vector Group",
+          "hd": false
+        },
+        {
+          "ty": "gr",
+          "it": [
+            {
+              "ind": 0,
+              "ty": "sh",
+              "ix": 1,
+              "ks": {
+                "a": 1,
+                "k": [
+                  {
+                    "i": {
+                      "x": 0.833,
+                      "y": 0.833
+                    },
+                    "o": {
+                      "x": 0.167,
+                      "y": 0.167
+                    },
+                    "t": 6,
+                    "s": [
+                      {
+                        "i": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "o": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "v": [
+                          [
+                            9.07,
+                            7.5
+                          ],
+                          [
+                            13.43,
+                            7.5
+                          ]
+                        ],
+                        "c": false
+                      }
+                    ]
+                  },
+                  {
+                    "i": {
+                      "x": 0.833,
+                      "y": 0.833
+                    },
+                    "o": {
+                      "x": 0.167,
+                      "y": 0.167
+                    },
+                    "t": 10,
+                    "s": [
+                      {
+                        "i": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "o": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "v": [
+                          [
+                            11.21,
+                            7.432
+                          ],
+                          [
+                            11.358,
+                            7.636
+                          ]
+                        ],
+                        "c": false
+                      }
+                    ]
+                  },
+                  {
+                    "i": {
+                      "x": 0.833,
+                      "y": 0.833
+                    },
+                    "o": {
+                      "x": 0.167,
+                      "y": 0.167
+                    },
+                    "t": 14,
+                    "s": [
+                      {
+                        "i": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "o": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "v": [
+                          [
+                            15.116,
+                            7.436
+                          ],
+                          [
+                            15.128,
+                            7.504
+                          ]
+                        ],
+                        "c": false
+                      }
+                    ]
+                  },
+                  {
+                    "i": {
+                      "x": 0.833,
+                      "y": 0.833
+                    },
+                    "o": {
+                      "x": 0.167,
+                      "y": 0.167
+                    },
+                    "t": 18,
+                    "s": [
+                      {
+                        "i": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "o": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "v": [
+                          [
+                            12.127,
+                            7.436
+                          ],
+                          [
+                            12.207,
+                            7.64
+                          ]
+                        ],
+                        "c": false
+                      }
+                    ]
+                  },
+                  {
+                    "i": {
+                      "x": 0.833,
+                      "y": 0.833
+                    },
+                    "o": {
+                      "x": 0.167,
+                      "y": 0.167
+                    },
+                    "t": 19,
+                    "s": [
+                      {
+                        "i": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "o": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "v": [
+                          [
+                            11.363,
+                            7.452
+                          ],
+                          [
+                            11.358,
+                            7.639
+                          ]
+                        ],
+                        "c": false
+                      }
+                    ]
+                  },
+                  {
+                    "t": 22,
+                    "s": [
+                      {
+                        "i": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "o": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "v": [
+                          [
+                            9.07,
+                            7.5
+                          ],
+                          [
+                            13.43,
+                            7.5
+                          ]
+                        ],
+                        "c": false
+                      }
+                    ]
+                  }
+                ],
+                "ix": 2
+              },
+              "nm": "Path 1",
+              "mn": "ADBE Vector Shape - Group",
+              "hd": false
+            },
+            {
+              "ty": "st",
+              "c": {
+                "a": 0,
+                "k": [
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "ix": 3
+              },
+              "o": {
+                "a": 0,
+                "k": 100,
+                "ix": 4
+              },
+              "w": {
+                "a": 1,
+                "k": [
+                  {
+                    "i": {
+                      "x": [
+                        0.667
+                      ],
+                      "y": [
+                        1
+                      ]
+                    },
+                    "o": {
+                      "x": [
+                        0.333
+                      ],
+                      "y": [
+                        0
+                      ]
+                    },
+                    "t": 9,
+                    "s": [
+                      1.5
+                    ]
+                  },
+                  {
+                    "i": {
+                      "x": [
+                        0.667
+                      ],
+                      "y": [
+                        1
+                      ]
+                    },
+                    "o": {
+                      "x": [
+                        0.333
+                      ],
+                      "y": [
+                        0
+                      ]
+                    },
+                    "t": 10,
+                    "s": [
+                      0
+                    ]
+                  },
+                  {
+                    "i": {
+                      "x": [
+                        0.667
+                      ],
+                      "y": [
+                        1
+                      ]
+                    },
+                    "o": {
+                      "x": [
+                        0.333
+                      ],
+                      "y": [
+                        0
+                      ]
+                    },
+                    "t": 18,
+                    "s": [
+                      0
+                    ]
+                  },
+                  {
+                    "t": 19,
+                    "s": [
+                      1.5
+                    ]
+                  }
+                ],
+                "ix": 5
+              },
+              "lc": 2,
+              "lj": 2,
+              "bm": 0,
+              "nm": "Stroke 1",
+              "mn": "ADBE Vector Graphic - Stroke",
+              "hd": false
+            },
+            {
+              "ty": "tr",
+              "p": {
+                "a": 0,
+                "k": [
+                  0,
+                  0
+                ],
+                "ix": 2
+              },
+              "a": {
+                "a": 0,
+                "k": [
+                  0,
+                  0
+                ],
+                "ix": 1
+              },
+              "s": {
+                "a": 0,
+                "k": [
+                  100,
+                  100
+                ],
+                "ix": 3
+              },
+              "r": {
+                "a": 0,
+                "k": 0,
+                "ix": 6
+              },
+              "o": {
+                "a": 0,
+                "k": 100,
+                "ix": 7
+              },
+              "sk": {
+                "a": 0,
+                "k": 0,
+                "ix": 4
+              },
+              "sa": {
+                "a": 0,
+                "k": 0,
+                "ix": 5
+              },
+              "nm": "Transform"
+            }
+          ],
+          "nm": "Group 3",
+          "np": 2,
+          "cix": 2,
+          "bm": 0,
+          "ix": 3,
+          "mn": "ADBE Vector Group",
+          "hd": false
+        },
+        {
+          "ty": "gr",
+          "it": [
+            {
+              "ind": 0,
+              "ty": "sh",
+              "ix": 1,
+              "ks": {
+                "a": 0,
+                "k": {
+                  "i": [
+                    [
+                      2.4,
+                      0
+                    ],
+                    [
+                      0,
+                      1.65
+                    ],
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      -2.4,
+                      0
+                    ],
+                    [
+                      0,
+                      -1.65
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ],
+                  "o": [
+                    [
+                      -2.4,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      0,
+                      -1.65
+                    ],
+                    [
+                      2.4,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      0,
+                      1.65
+                    ]
+                  ],
+                  "v": [
+                    [
+                      0,
+                      6
+                    ],
+                    [
+                      -3,
+                      3
+                    ],
+                    [
+                      -3,
+                      -3
+                    ],
+                    [
+                      0,
+                      -6
+                    ],
+                    [
+                      3,
+                      -3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "c": true
+                },
+                "ix": 2
+              },
+              "nm": "Path 1",
+              "mn": "ADBE Vector Shape - Group",
+              "hd": false
+            },
+            {
+              "ty": "st",
+              "c": {
+                "a": 0,
+                "k": [
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "ix": 3
+              },
+              "o": {
+                "a": 0,
+                "k": 100,
+                "ix": 4
+              },
+              "w": {
+                "a": 0,
+                "k": 1.5,
+                "ix": 5
+              },
+              "lc": 2,
+              "lj": 2,
+              "bm": 0,
+              "nm": "Stroke 1",
+              "mn": "ADBE Vector Graphic - Stroke",
+              "hd": false
+            },
+            {
+              "ty": "tr",
+              "p": {
+                "a": 1,
+                "k": [
+                  {
+                    "i": {
+                      "x": 0.833,
+                      "y": 0.833
+                    },
+                    "o": {
+                      "x": 0.39,
+                      "y": 0
+                    },
+                    "t": 4,
+                    "s": [
+                      6.07,
+                      7.5
+                    ],
+                    "to": [
+                      0.863,
+                      0
+                    ],
+                    "ti": [
+                      -0.863,
+                      0
+                    ]
+                  },
+                  {
+                    "t": 22,
+                    "s": [
+                      16.43,
+                      7.5
+                    ]
+                  }
+                ],
+                "ix": 2,
+                "x": "var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\ntry {\n    amp = $bm_div(effect('Elastic Controller')(1), 200);\n    freq = $bm_div(effect('Elastic Controller')(2), 30);\n    decay = $bm_div(effect('Elastic Controller')(3), 10);\n    $bm_rt = n = 0;\n    if (numKeys > 0) {\n        $bm_rt = n = nearestKey(time).index;\n        if (key(n).time > time) {\n            n--;\n        }\n    }\n    if (n == 0) {\n        $bm_rt = t = 0;\n    } else {\n        $bm_rt = t = $bm_sub(time, key(n).time);\n    }\n    if (n > 0) {\n        v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n        $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n    } else {\n        $bm_rt = value;\n    }\n} catch (e$$4) {\n    $bm_rt = value = value;\n}"
+              },
+              "a": {
+                "a": 0,
+                "k": [
+                  0,
+                  0
+                ],
+                "ix": 1,
+                "x": "var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\ntry {\n    amp = $bm_div(effect('Elastic Controller')(1), 200);\n    freq = $bm_div(effect('Elastic Controller')(2), 30);\n    decay = $bm_div(effect('Elastic Controller')(3), 10);\n    $bm_rt = n = 0;\n    if (numKeys > 0) {\n        $bm_rt = n = nearestKey(time).index;\n        if (key(n).time > time) {\n            n--;\n        }\n    }\n    if (n == 0) {\n        $bm_rt = t = 0;\n    } else {\n        $bm_rt = t = $bm_sub(time, key(n).time);\n    }\n    if (n > 0) {\n        v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n        $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n    } else {\n        $bm_rt = value;\n    }\n} catch (e$$4) {\n    $bm_rt = value = value;\n}"
+              },
+              "s": {
+                "a": 0,
+                "k": [
+                  100,
+                  100
+                ],
+                "ix": 3,
+                "x": "var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\ntry {\n    amp = $bm_div(effect('Elastic Controller')(1), 200);\n    freq = $bm_div(effect('Elastic Controller')(2), 30);\n    decay = $bm_div(effect('Elastic Controller')(3), 10);\n    $bm_rt = n = 0;\n    if (numKeys > 0) {\n        $bm_rt = n = nearestKey(time).index;\n        if (key(n).time > time) {\n            n--;\n        }\n    }\n    if (n == 0) {\n        $bm_rt = t = 0;\n    } else {\n        $bm_rt = t = $bm_sub(time, key(n).time);\n    }\n    if (n > 0) {\n        v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n        $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n    } else {\n        $bm_rt = value;\n    }\n} catch (e$$4) {\n    $bm_rt = value = value;\n}"
+              },
+              "r": {
+                "a": 0,
+                "k": 0,
+                "ix": 6,
+                "x": "var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\ntry {\n    amp = $bm_div(effect('Elastic Controller')(1), 200);\n    freq = $bm_div(effect('Elastic Controller')(2), 30);\n    decay = $bm_div(effect('Elastic Controller')(3), 10);\n    $bm_rt = n = 0;\n    if (numKeys > 0) {\n        $bm_rt = n = nearestKey(time).index;\n        if (key(n).time > time) {\n            n--;\n        }\n    }\n    if (n == 0) {\n        $bm_rt = t = 0;\n    } else {\n        $bm_rt = t = $bm_sub(time, key(n).time);\n    }\n    if (n > 0) {\n        v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n        $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n    } else {\n        $bm_rt = value;\n    }\n} catch (e$$4) {\n    $bm_rt = value = value;\n}"
+              },
+              "o": {
+                "a": 0,
+                "k": 100,
+                "ix": 7,
+                "x": "var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\ntry {\n    amp = $bm_div(effect('Elastic Controller')(1), 200);\n    freq = $bm_div(effect('Elastic Controller')(2), 30);\n    decay = $bm_div(effect('Elastic Controller')(3), 10);\n    $bm_rt = n = 0;\n    if (numKeys > 0) {\n        $bm_rt = n = nearestKey(time).index;\n        if (key(n).time > time) {\n            n--;\n        }\n    }\n    if (n == 0) {\n        $bm_rt = t = 0;\n    } else {\n        $bm_rt = t = $bm_sub(time, key(n).time);\n    }\n    if (n > 0) {\n        v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n        $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n    } else {\n        $bm_rt = value;\n    }\n} catch (e$$4) {\n    $bm_rt = value = value;\n}"
+              },
+              "sk": {
+                "a": 0,
+                "k": 0,
+                "ix": 4,
+                "x": "var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\ntry {\n    amp = $bm_div(effect('Elastic Controller')(1), 200);\n    freq = $bm_div(effect('Elastic Controller')(2), 30);\n    decay = $bm_div(effect('Elastic Controller')(3), 10);\n    $bm_rt = n = 0;\n    if (numKeys > 0) {\n        $bm_rt = n = nearestKey(time).index;\n        if (key(n).time > time) {\n            n--;\n        }\n    }\n    if (n == 0) {\n        $bm_rt = t = 0;\n    } else {\n        $bm_rt = t = $bm_sub(time, key(n).time);\n    }\n    if (n > 0) {\n        v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n        $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n    } else {\n        $bm_rt = value;\n    }\n} catch (e$$4) {\n    $bm_rt = value = value;\n}"
+              },
+              "sa": {
+                "a": 0,
+                "k": 0,
+                "ix": 5,
+                "x": "var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\ntry {\n    amp = $bm_div(effect('Elastic Controller')(1), 200);\n    freq = $bm_div(effect('Elastic Controller')(2), 30);\n    decay = $bm_div(effect('Elastic Controller')(3), 10);\n    $bm_rt = n = 0;\n    if (numKeys > 0) {\n        $bm_rt = n = nearestKey(time).index;\n        if (key(n).time > time) {\n            n--;\n        }\n    }\n    if (n == 0) {\n        $bm_rt = t = 0;\n    } else {\n        $bm_rt = t = $bm_sub(time, key(n).time);\n    }\n    if (n > 0) {\n        v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n        $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n    } else {\n        $bm_rt = value;\n    }\n} catch (e$$4) {\n    $bm_rt = value = value;\n}"
+              },
+              "nm": "Transform"
+            }
+          ],
+          "nm": "Group 4",
+          "np": 2,
+          "cix": 2,
+          "bm": 0,
+          "ix": 4,
+          "mn": "ADBE Vector Group",
+          "hd": false
+        },
+        {
+          "ty": "gr",
+          "it": [
+            {
+              "ind": 0,
+              "ty": "sh",
+              "ix": 1,
+              "ks": {
+                "a": 0,
+                "k": {
+                  "i": [
+                    [
+                      -2.4,
+                      0
+                    ],
+                    [
+                      0,
+                      1.65
+                    ],
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      2.4,
+                      0
+                    ],
+                    [
+                      0,
+                      -1.65
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ],
+                  "o": [
+                    [
+                      2.4,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      0,
+                      -1.65
+                    ],
+                    [
+                      -2.4,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      0,
+                      1.65
+                    ]
+                  ],
+                  "v": [
+                    [
+                      0,
+                      6
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      3,
+                      -3
+                    ],
+                    [
+                      0,
+                      -6
+                    ],
+                    [
+                      -3,
+                      -3
+                    ],
+                    [
+                      -3,
+                      3
+                    ]
+                  ],
+                  "c": true
+                },
+                "ix": 2,
+                "x": "var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\ntry {\n    amp = $bm_div(effect('Elastic Controller')(1), 200);\n    freq = $bm_div(effect('Elastic Controller')(2), 30);\n    decay = $bm_div(effect('Elastic Controller')(3), 10);\n    $bm_rt = n = 0;\n    if (numKeys > 0) {\n        $bm_rt = n = nearestKey(time).index;\n        if (key(n).time > time) {\n            n--;\n        }\n    }\n    if (n == 0) {\n        $bm_rt = t = 0;\n    } else {\n        $bm_rt = t = $bm_sub(time, key(n).time);\n    }\n    if (n > 0) {\n        v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n        $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n    } else {\n        $bm_rt = value;\n    }\n} catch (e$$4) {\n    $bm_rt = value = value;\n}"
+              },
+              "nm": "Path 1",
+              "mn": "ADBE Vector Shape - Group",
+              "hd": false
+            },
+            {
+              "ty": "st",
+              "c": {
+                "a": 0,
+                "k": [
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "ix": 3
+              },
+              "o": {
+                "a": 0,
+                "k": 100,
+                "ix": 4
+              },
+              "w": {
+                "a": 0,
+                "k": 1.5,
+                "ix": 5
+              },
+              "lc": 2,
+              "lj": 2,
+              "bm": 0,
+              "nm": "Stroke 1",
+              "mn": "ADBE Vector Graphic - Stroke",
+              "hd": false
+            },
+            {
+              "ty": "tr",
+              "p": {
+                "a": 1,
+                "k": [
+                  {
+                    "i": {
+                      "x": 0.833,
+                      "y": 0.833
+                    },
+                    "o": {
+                      "x": 0.39,
+                      "y": 0
+                    },
+                    "t": 4,
+                    "s": [
+                      16.43,
+                      7.5
+                    ],
+                    "to": [
+                      -0.863,
+                      0
+                    ],
+                    "ti": [
+                      0.863,
+                      0
+                    ]
+                  },
+                  {
+                    "t": 22,
+                    "s": [
+                      6.07,
+                      7.5
+                    ]
+                  }
+                ],
+                "ix": 2,
+                "x": "var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\ntry {\n    amp = $bm_div(effect('Elastic Controller')(1), 200);\n    freq = $bm_div(effect('Elastic Controller')(2), 30);\n    decay = $bm_div(effect('Elastic Controller')(3), 10);\n    $bm_rt = n = 0;\n    if (numKeys > 0) {\n        $bm_rt = n = nearestKey(time).index;\n        if (key(n).time > time) {\n            n--;\n        }\n    }\n    if (n == 0) {\n        $bm_rt = t = 0;\n    } else {\n        $bm_rt = t = $bm_sub(time, key(n).time);\n    }\n    if (n > 0) {\n        v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n        $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n    } else {\n        $bm_rt = value;\n    }\n} catch (e$$4) {\n    $bm_rt = value = value;\n}"
+              },
+              "a": {
+                "a": 0,
+                "k": [
+                  0,
+                  0
+                ],
+                "ix": 1,
+                "x": "var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\ntry {\n    amp = $bm_div(effect('Elastic Controller')(1), 200);\n    freq = $bm_div(effect('Elastic Controller')(2), 30);\n    decay = $bm_div(effect('Elastic Controller')(3), 10);\n    $bm_rt = n = 0;\n    if (numKeys > 0) {\n        $bm_rt = n = nearestKey(time).index;\n        if (key(n).time > time) {\n            n--;\n        }\n    }\n    if (n == 0) {\n        $bm_rt = t = 0;\n    } else {\n        $bm_rt = t = $bm_sub(time, key(n).time);\n    }\n    if (n > 0) {\n        v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n        $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n    } else {\n        $bm_rt = value;\n    }\n} catch (e$$4) {\n    $bm_rt = value = value;\n}"
+              },
+              "s": {
+                "a": 0,
+                "k": [
+                  100,
+                  100
+                ],
+                "ix": 3,
+                "x": "var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\ntry {\n    amp = $bm_div(effect('Elastic Controller')(1), 200);\n    freq = $bm_div(effect('Elastic Controller')(2), 30);\n    decay = $bm_div(effect('Elastic Controller')(3), 10);\n    $bm_rt = n = 0;\n    if (numKeys > 0) {\n        $bm_rt = n = nearestKey(time).index;\n        if (key(n).time > time) {\n            n--;\n        }\n    }\n    if (n == 0) {\n        $bm_rt = t = 0;\n    } else {\n        $bm_rt = t = $bm_sub(time, key(n).time);\n    }\n    if (n > 0) {\n        v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n        $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n    } else {\n        $bm_rt = value;\n    }\n} catch (e$$4) {\n    $bm_rt = value = value;\n}"
+              },
+              "r": {
+                "a": 0,
+                "k": 0,
+                "ix": 6
+              },
+              "o": {
+                "a": 0,
+                "k": 100,
+                "ix": 7
+              },
+              "sk": {
+                "a": 0,
+                "k": 0,
+                "ix": 4,
+                "x": "var $bm_rt;\nvar amp, freq, decay, n, n, t, t, v;\ntry {\n    amp = $bm_div(effect('Elastic Controller')(1), 200);\n    freq = $bm_div(effect('Elastic Controller')(2), 30);\n    decay = $bm_div(effect('Elastic Controller')(3), 10);\n    $bm_rt = n = 0;\n    if (numKeys > 0) {\n        $bm_rt = n = nearestKey(time).index;\n        if (key(n).time > time) {\n            n--;\n        }\n    }\n    if (n == 0) {\n        $bm_rt = t = 0;\n    } else {\n        $bm_rt = t = $bm_sub(time, key(n).time);\n    }\n    if (n > 0) {\n        v = velocityAtTime($bm_sub(key(n).time, $bm_div(thisComp.frameDuration, 10)));\n        $bm_rt = $bm_sum(value, $bm_div($bm_mul($bm_mul(v, amp), Math.sin($bm_mul($bm_mul($bm_mul(freq, t), 2), Math.PI))), Math.exp($bm_mul(decay, t))));\n    } else {\n        $bm_rt = value;\n    }\n} catch (e$$4) {\n    $bm_rt = value = value;\n}"
+              },
+              "sa": {
+                "a": 0,
+                "k": 0,
+                "ix": 5
+              },
+              "nm": "Transform"
+            }
+          ],
+          "nm": "Group 5",
+          "np": 2,
+          "cix": 2,
+          "bm": 0,
+          "ix": 5,
+          "mn": "ADBE Vector Group",
+          "hd": false
+        }
+      ],
+      "ip": 0,
+      "op": 40,
+      "st": 0,
+      "bm": 0
+    }
+  ],
+  "markers": []
+}

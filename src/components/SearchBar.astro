@@ -1,0 +1,44 @@
+---
+interface Props {
+  value?: string;
+}
+
+const { value = '' } = Astro.props;
+---
+
+<div class="search-row">
+  <div class="search-bar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+    <input
+      type="search"
+      id="icon-search"
+      value={value}
+      placeholder="Search icons..."
+      autocomplete="off"
+    />
+  </div>
+
+  <nav class="search-links" aria-label="Quick links">
+    <a href="/docs">Docs</a>
+    <a href="/ai-prompt">AI Prompt</a>
+  </nav>
+</div>
+
+<script>
+  (function() {
+    const input = document.getElementById('icon-search') as HTMLInputElement | null;
+    if (!input) return;
+
+    let debounce: ReturnType<typeof setTimeout> | null = null;
+
+    input.addEventListener('input', () => {
+      if (debounce) clearTimeout(debounce);
+      debounce = setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('iconsearch', { detail: input.value }));
+      }, 200);
+    });
+  })();
+</script>

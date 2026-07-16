@@ -1,0 +1,98 @@
+---
+interface Props {
+  slug: string;
+  url: string;
+  name: string;
+}
+
+const { slug, url, name } = Astro.props;
+---
+
+<div
+  class="icon-preview"
+  data-slug={slug}
+  data-url={url}
+  data-name={name}
+  role="img"
+  aria-label={`${name} animation preview`}
+>
+</div>
+
+<script>
+  (function() {
+    const containers = Array.from(document.querySelectorAll('.icon-preview')) as HTMLElement[];
+    if (containers.length === 0) return;
+
+    containers.forEach((container: HTMLElement) => {
+      const urlVal = container.getAttribute('data-url') || '';
+
+      let animation: any = null;
+      let loaded = false;
+      let stage: HTMLDivElement | null = null;
+
+      async function loadAnimation(c: HTMLElement): Promise<void> {
+        if (loaded) return;
+
+        while (!(window as any).lottie) {
+          await new Promise(r => setTimeout(r, 50));
+        }
+
+        loaded = true;
+
+        stage = document.createElement('div');
+        stage.className = 'icon-preview-stage';
+        c.appendChild(stage);
+
+        try {
+          const response = await fetch(urlVal);
+          const data = await response.json();
+
+          animation = (window as any).lottie.loadAnimation({
+            container: stage,
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            animationData: data,
+            rendererSettings: {
+              preserveAspectRatio: 'xMidYMid meet',
+              progressiveLoad: true,
+            }
+          });
+        } catch (e) {
+          loaded = false;
+          if (stage?.parentNode) stage.parentNode.removeChild(stage);
+          stage = null;
+        }
+      }
+
+      function stopAnimation(c: HTMLElement): void {
+        if (animation) {
+          animation.stop();
+          animation.destroy();
+          animation = null;
+        }
+        loaded = false;
+
+        const currentStage = stage ?? c.querySelector('.icon-preview-stage');
+        if (currentStage && currentStage.parentNode) currentStage.parentNode.removeChild(currentStage);
+        stage = null;
+      }
+
+      container.addEventListener('mouseenter', () => loadAnimation(container));
+      container.addEventListener('focus', () => loadAnimation(container));
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            loadAnimation(container);
+          } else {
+            stopAnimation(container);
+          }
+        });
+      }, { rootMargin: '0px', threshold: 0.1 });
+
+      io.observe(container);
+      window.addEventListener('beforeunload', () => stopAnimation(container));
+    });
+  })();
+</script>

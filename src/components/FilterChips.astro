@@ -1,0 +1,129 @@
+---
+interface Props {
+  categories: { name: string; count: number; iconUrl?: string; iconSlug?: string; iconName?: string }[];
+  total: number;
+  allIcon?: { url?: string; slug?: string; name?: string };
+}
+
+const { categories = [], total = 0, allIcon } = Astro.props;
+---
+
+<div class="filter-chips" role="group" aria-label="Filter by category">
+  <button class="filter-chip active" data-category="">
+    {allIcon?.url && (
+      <span
+        class="filter-chip-preview"
+        data-slug={allIcon.slug}
+        data-url={allIcon.url}
+        data-name={allIcon.name || 'All'}
+        aria-hidden="true"
+      ></span>
+    )}
+    <span class="filter-chip-label">All</span>
+    <span class="count" id="count-all">{total}</span>
+  </button>
+  {categories.map(cat => (
+    <button class="filter-chip" data-category={cat.name}>
+      {cat.iconUrl && (
+        <span
+          class="filter-chip-preview"
+          data-slug={cat.iconSlug}
+          data-url={cat.iconUrl}
+          data-name={cat.iconName || cat.name}
+          aria-hidden="true"
+        ></span>
+      )}
+      <span class="filter-chip-label">{cat.name}</span>
+      <span class="count">{cat.count}</span>
+    </button>
+  ))}
+</div>
+
+<script>
+  (function() {
+    const chips = Array.from(document.querySelectorAll('.filter-chip')) as HTMLElement[];
+    const previews = Array.from(document.querySelectorAll('.filter-chip-preview')) as HTMLElement[];
+
+    chips.forEach((chip: HTMLElement) => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+
+        const category = chip.getAttribute('data-category') || '';
+        const searchEvent = new CustomEvent('iconfilter', { detail: category });
+        window.dispatchEvent(searchEvent);
+      });
+    });
+
+    previews.forEach((container: HTMLElement) => {
+      if (container.dataset.enhanced === 'true') return;
+      container.dataset.enhanced = 'true';
+
+      const urlVal = container.getAttribute('data-url') || '';
+      let animation: any = null;
+      let loaded = false;
+      let stage: HTMLDivElement | null = null;
+
+      async function loadAnimation(): Promise<void> {
+        if (loaded || !urlVal) return;
+
+        while (!(window as any).lottie) {
+          await new Promise(r => setTimeout(r, 50));
+        }
+
+        loaded = true;
+        stage = document.createElement('div');
+        stage.className = 'icon-preview-stage';
+        container.appendChild(stage);
+
+        try {
+          const response = await fetch(urlVal);
+          const data = await response.json();
+
+          animation = (window as any).lottie.loadAnimation({
+            container: stage,
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            animationData: data,
+            rendererSettings: {
+              preserveAspectRatio: 'xMidYMid meet',
+              progressiveLoad: true,
+            }
+          });
+        } catch (e) {
+          loaded = false;
+          if (stage?.parentNode) stage.parentNode.removeChild(stage);
+          stage = null;
+        }
+      }
+
+      function stopAnimation(): void {
+        if (animation) {
+          animation.stop();
+          animation.destroy();
+          animation = null;
+        }
+        loaded = false;
+
+        const currentStage = stage ?? container.querySelector('.icon-preview-stage');
+        if (currentStage && currentStage.parentNode) currentStage.parentNode.removeChild(currentStage);
+        stage = null;
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            loadAnimation();
+          } else {
+            stopAnimation();
+          }
+        });
+      }, { rootMargin: '120px 0px', threshold: 0.1 });
+
+      observer.observe(container);
+      container.addEventListener('mouseenter', () => loadAnimation());
+      window.addEventListener('beforeunload', () => stopAnimation());
+    });
+  })();
+</script>
