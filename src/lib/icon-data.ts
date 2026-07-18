@@ -33,14 +33,23 @@ function recolorLottie(data: any, hex: string): any {
       typeof node.ty === 'string' &&
       (node.ty === 'fl' || node.ty === 'st' || node.ty === 'gf') &&
       node.c &&
-      node.c.k &&
-      Array.isArray(node.c.k)
+      node.c.k
     ) {
-      const first = node.c.k[0];
-      if (first && Array.isArray(first.s) && first.s.length >= 4) {
-        first.s[0] = r;
-        first.s[1] = g;
-        first.s[2] = b;
+      const c = node.c;
+      if (c.a === 0 && Array.isArray(c.k) && c.k.length >= 3) {
+        // static color: c.k = [r, g, b, a]
+        c.k[0] = r;
+        c.k[1] = g;
+        c.k[2] = b;
+      } else if (Array.isArray(c.k)) {
+        // animated color: c.k = [{ t, s: [r,g,b,a] }, ...]
+        c.k.forEach((kf: any) => {
+          if (kf && Array.isArray(kf.s) && kf.s.length >= 3) {
+            kf.s[0] = r;
+            kf.s[1] = g;
+            kf.s[2] = b;
+          }
+        });
       }
     }
 

@@ -261,6 +261,9 @@ const allIconsJson = JSON.stringify(manifest.icons);
             }
           }
 
+          const addBtn = card.querySelector('.add-btn') as HTMLElement | null;
+          addBtn?.addEventListener('click', addToCart);
+
           card.addEventListener('keydown', (e: KeyboardEvent) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
@@ -395,7 +398,6 @@ const allIconsJson = JSON.stringify(manifest.icons);
         if (cartDownloadCount) cartDownloadCount.textContent = String(n);
         if (cartDownloadS) cartDownloadS.style.display = n === 1 ? 'none' : 'inline';
         if (cartEmpty) cartEmpty.style.display = n === 0 ? 'flex' : 'none';
-        if (cartItems) cartItems.style.display = n === 0 ? 'none' : 'block';
         if (cartDownloadBtn) cartDownloadBtn.disabled = n === 0;
       }
 
