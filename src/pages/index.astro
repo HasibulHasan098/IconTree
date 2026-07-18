@@ -374,11 +374,13 @@ const allIconsJson = JSON.stringify(manifest.icons);
       }
 
       function applyColor(hex: string, name?: string, fromWheel = false): void {
-        panelColor = `#${hex.replace(/^#/, '')}`;
+        const clean = hex.replace(/^#/, '');
+        panelColor = `#${clean}`;
         if (cartColorSwatch) cartColorSwatch.style.background = panelColor;
-        if (cartColorText) cartColorText.textContent = panelColor.toUpperCase();
-        if (cartColorHex) cartColorHex.value = hex.replace(/^#/, '');
-        if (colorWheel && !fromWheel) colorWheel.setColors(panelColor);
+        const textEl = document.getElementById('cart-color-text');
+        if (textEl) textEl.textContent = panelColor.toUpperCase();
+        if (cartColorHex) cartColorHex.value = clean;
+        if (colorWheel) colorWheel.setColors(panelColor);
         destroyPreviews();
         renderCart();
       }
