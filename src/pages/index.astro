@@ -62,35 +62,19 @@ const allIconsJson = JSON.stringify(manifest.icons);
     </div>
   </main>
 
-  <button id="cart-toggle" class="cart-toggle" aria-label="Open selection" title="Selection">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-      <polyline points="17 21 17 13 7 13 7 21" />
-      <polyline points="7 3 7 8 15 8" />
-    </svg>
-    <span id="cart-count" class="cart-count" style="display: none;">0</span>
-  </button>
-
-  <div id="cart-drawer" class="cart-drawer" aria-hidden="true">
-    <div class="cart-drawer-header">
-      <h3>Selected Icons</h3>
-      <button id="cart-close" class="cart-close" aria-label="Close selection">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </button>
+  <aside id="cart-panel" class="cart-panel" aria-label="Selected icons">
+    <div class="cart-panel-header">
+      <h3>Selected Icons (<span id="cart-count">0</span>)</h3>
+      <button id="cart-clear" class="cart-clear" title="Clear all">Clear</button>
     </div>
     <div id="cart-items" class="cart-items"></div>
-    <div class="cart-empty" id="cart-empty">No icons selected yet. Click + on any icon to add it.</div>
-    <div class="cart-drawer-footer">
-      <button id="cart-clear" class="cart-clear">Clear</button>
+    <div class="cart-empty" id="cart-empty">No icons yet. Click + on any icon to add it here.</div>
+    <div class="cart-panel-footer">
       <button id="cart-download" class="cart-download" disabled>
-        Download all (<span id="cart-download-count">0</span>)
+        Download <span id="cart-download-count">0</span> icon<span id="cart-download-s">s</span>
       </button>
     </div>
-  </div>
-  <div id="cart-overlay" class="cart-overlay"></div>
+  </aside>
   <script is:inline define:vars={{ allIconsData: allIconsJson }}>
     window.__ICON_MANIFEST__ = JSON.parse(allIconsData);
   </script>
@@ -327,75 +311,100 @@ const allIconsJson = JSON.stringify(manifest.icons);
         await loadPage(1, true);
       });
 
-      /* ---------- Selection cart + drawer ---------- */
-      const cartToggle = document.getElementById('cart-toggle');
-      const cartDrawer = document.getElementById('cart-drawer');
-      const cartOverlay = document.getElementById('cart-overlay');
-      const cartClose = document.getElementById('cart-close');
+      /* ---------- Selection panel (fixed right) ---------- */
       const cartItems = document.getElementById('cart-items');
       const cartEmpty = document.getElementById('cart-empty');
       const cartCount = document.getElementById('cart-count');
       const cartDownloadCount = document.getElementById('cart-download-count');
+      const cartDownloadS = document.getElementById('cart-download-s');
       const cartDownloadBtn = document.getElementById('cart-download') as HTMLButtonElement | null;
       const cartClearBtn = document.getElementById('cart-clear');
 
-      const selection: Array<{ url: string; name: string; slug: string }> = [];
+      const selection: Array<{ url: string; name: string; slug: string; color: string }> = [];
       const seen = new Set<string>();
+      const previews: Array<{ el: HTMLElement; anim: any }> = [];
 
       function slugToFile(slug: string): string {
         return `${slug || 'icon'}.json`;
+      }
+
+      function urlWithColor(item: { url: string; color: string }): string {
+        if (!item.color) return item.url;
+        const sep = item.url.includes('?') ? '&' : '?';
+        return `${item.url}${sep}color=${item.color.replace(/^#/, '')}`;
+      }
+
+      function renderPreview(stage: HTMLElement, item: { url: string; color: string }): void {
+        let anim: any = null;
+        async function load(): Promise<void> {
+          while (!(window as any).lottie) {
+            await new Promise(r => setTimeout(r, 50));
+          }
+          try {
+            const res = await fetch(urlWithColor(item));
+            const data = await res.json();
+            anim = (window as any).lottie.loadAnimation({
+              container: stage,
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              animationData: data,
+            });
+          } catch (e) {
+            console.error('Preview failed:', e);
+          }
+        }
+        load();
+        previews.push({ el: stage, anim });
       }
 
       function renderCart(): void {
         if (!cartItems) return;
         cartItems.innerHTML = '';
         selection.forEach((item, idx) => {
-          const row = document.createElement('div');
-          row.className = 'cart-item';
-          row.innerHTML = `
-            <span class="cart-item-name">${item.name}</span>
+          const card = document.createElement('div');
+          card.className = 'cart-item';
+          card.innerHTML = `
+            <div class="cart-item-preview" data-idx="${idx}"></div>
+            <div class="cart-item-info">
+              <span class="cart-item-name" title="${item.name}">${item.name}</span>
+              <label class="cart-item-color">
+                <input type="color" value="${item.color || '#0066ff'}" data-idx="${idx}" aria-label="Color for ${item.name}" />
+                <span>Color</span>
+              </label>
+            </div>
             <button class="cart-item-remove" data-idx="${idx}" aria-label="Remove ${item.name}">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>`;
-          cartItems.appendChild(row);
+          cartItems.appendChild(card);
+
+          const stage = card.querySelector('.cart-item-preview') as HTMLElement;
+          renderPreview(stage, item);
         });
 
         const n = selection.length;
-        if (cartCount) {
-          cartCount.textContent = String(n);
-          cartCount.style.display = n > 0 ? 'flex' : 'none';
-        }
+        if (cartCount) cartCount.textContent = String(n);
         if (cartDownloadCount) cartDownloadCount.textContent = String(n);
-        if (cartEmpty) cartEmpty.style.display = n === 0 ? 'block' : 'none';
+        if (cartDownloadS) cartDownloadS.style.display = n === 1 ? 'none' : 'inline';
+        if (cartEmpty) cartEmpty.style.display = n === 0 ? 'flex' : 'none';
         if (cartItems) cartItems.style.display = n === 0 ? 'none' : 'block';
         if (cartDownloadBtn) cartDownloadBtn.disabled = n === 0;
       }
 
-      function openCart(): void {
-        cartDrawer?.classList.add('open');
-        cartOverlay?.classList.add('show');
-        cartDrawer?.setAttribute('aria-hidden', 'false');
-      }
-      function closeCart(): void {
-        cartDrawer?.classList.remove('open');
-        cartOverlay?.classList.remove('show');
-        cartDrawer?.setAttribute('aria-hidden', 'true');
+      function destroyPreviews(): void {
+        previews.forEach(p => { try { p.anim?.destroy(); } catch (_) {} });
+        previews.length = 0;
       }
 
       window.addEventListener('iconadd', (e: any) => {
         const { url, name, slug } = e.detail;
         if (seen.has(url)) return;
         seen.add(url);
-        selection.push({ url, name, slug });
+        selection.push({ url, name, slug, color: '' });
         renderCart();
-        openCart();
       });
-
-      cartToggle?.addEventListener('click', openCart);
-      cartClose?.addEventListener('click', closeCart);
-      cartOverlay?.addEventListener('click', closeCart);
 
       cartItems?.addEventListener('click', (e: Event) => {
         const target = (e.target as HTMLElement).closest('.cart-item-remove') as HTMLElement | null;
@@ -403,12 +412,26 @@ const allIconsJson = JSON.stringify(manifest.icons);
         const idx = Number(target.getAttribute('data-idx'));
         const removed = selection.splice(idx, 1)[0];
         if (removed) seen.delete(removed.url);
+        destroyPreviews();
         renderCart();
+      });
+
+      cartItems?.addEventListener('input', (e: Event) => {
+        const input = (e.target as HTMLElement).closest('input[type="color"]') as HTMLInputElement | null;
+        if (!input) return;
+        const idx = Number(input.getAttribute('data-idx'));
+        if (selection[idx]) selection[idx].color = input.value;
+        const stage = cartItems?.querySelector(`.cart-item-preview[data-idx="${idx}"]`) as HTMLElement | null;
+        if (stage) {
+          stage.innerHTML = '';
+          renderPreview(stage, selection[idx]);
+        }
       });
 
       cartClearBtn?.addEventListener('click', () => {
         selection.length = 0;
         seen.clear();
+        destroyPreviews();
         renderCart();
       });
 
@@ -448,36 +471,24 @@ const allIconsJson = JSON.stringify(manifest.icons);
           const size = f.data.length;
 
           const local = new Uint8Array([
-            0x50, 0x4b, 0x03, 0x04,        // local file header sig
-            ...u16(20),                    // version needed
-            ...u16(0),                     // flags
-            ...u16(0),                     // method (store)
-            ...u16(0), ...u16(0),          // mod time/date
-            ...u32(crc),                   // crc32
-            ...u32(size), ...u32(size),    // compressed / uncompressed size
-            ...u16(nameBytes.length),      // name length
-            ...u16(0),                     // extra length
-            ...nameBytes,                  // name
-            ...f.data,                     // content
+            0x50, 0x4b, 0x03, 0x04,
+            ...u16(20), ...u16(0), ...u16(0),
+            ...u16(0), ...u16(0),
+            ...u32(crc), ...u32(size), ...u32(size),
+            ...u16(nameBytes.length), ...u16(0),
+            ...nameBytes, ...f.data,
           ]);
           chunks.push(local);
           const localOffset = offset;
           offset += local.length;
 
           const cd = new Uint8Array([
-            0x50, 0x4b, 0x01, 0x02,        // central dir header sig
-            ...u16(20),                    // version made by
-            ...u16(20),                    // version needed
-            ...u16(0),                     // flags
-            ...u16(0),                     // method
-            ...u16(0), ...u16(0),          // mod time/date
-            ...u32(crc),
-            ...u32(size), ...u32(size),
-            ...u16(nameBytes.length),
-            ...u16(0), ...u16(0), ...u16(0),
-            ...u32(0),
-            ...u32(localOffset),
-            ...nameBytes,
+            0x50, 0x4b, 0x01, 0x02,
+            ...u16(20), ...u16(20), ...u16(0), ...u16(0),
+            ...u16(0), ...u16(0),
+            ...u32(crc), ...u32(size), ...u32(size),
+            ...u16(nameBytes.length), ...u16(0), ...u16(0), ...u16(0),
+            ...u32(0), ...u32(localOffset), ...nameBytes,
           ]);
           central.push(cd);
         });
@@ -486,12 +497,10 @@ const allIconsJson = JSON.stringify(manifest.icons);
         const centralOffset = offset;
 
         const end = new Uint8Array([
-          0x50, 0x4b, 0x05, 0x06,          // end of central dir sig
+          0x50, 0x4b, 0x05, 0x06,
           ...u16(0), ...u16(0),
           ...u16(files.length), ...u16(files.length),
-          ...u32(centralSize),
-          ...u32(centralOffset),
-          ...u16(0),
+          ...u32(centralSize), ...u32(centralOffset), ...u16(0),
         ]);
 
         return new Blob([...chunks, ...central, end], { type: 'application/zip' });
@@ -502,12 +511,12 @@ const allIconsJson = JSON.stringify(manifest.icons);
         try {
           if (selection.length === 1) {
             const item = selection[0];
-            const res = await fetch(item.url);
+            const res = await fetch(urlWithColor(item));
             const blob = await res.blob();
             triggerDownload(blob, slugToFile(item.slug));
           } else {
             const files = await Promise.all(selection.map(async (item) => {
-              const res = await fetch(item.url);
+              const res = await fetch(urlWithColor(item));
               const buf = new Uint8Array(await res.arrayBuffer());
               return { name: slugToFile(item.slug), data: buf };
             }));
