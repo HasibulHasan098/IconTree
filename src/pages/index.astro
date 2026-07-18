@@ -71,10 +71,22 @@ const allIconsJson = JSON.stringify(manifest.icons);
     <div class="cart-empty" id="cart-empty">No icons yet. Click + on any icon to add it here.</div>
     <div class="cart-panel-footer">
       <div class="cart-color-row">
-        <label class="cart-color-label">
-          <input type="color" id="cart-color" value="#0066ff" aria-label="Recolor icons" />
-          <span>Recolor</span>
-        </label>
+        <div class="cart-color-picker">
+          <button id="cart-color-btn" class="cart-color-btn" aria-label="Recolor icons" title="Recolor icons">
+            <span class="cart-color-swatch" id="cart-color-swatch" style="background:#000000"></span>
+            <span class="cart-color-text">Black</span>
+          </button>
+          <div id="cart-color-pop" class="cart-color-pop" hidden>
+            <div class="cart-color-swatches" id="cart-color-swatches"></div>
+            <div class="cart-color-custom">
+              <input type="range" id="cart-color-hue" class="cart-color-hue" min="0" max="360" value="0" aria-label="Hue" />
+              <div class="cart-color-hex">
+                <span>#</span>
+                <input type="text" id="cart-color-hex" class="cart-color-hex-input" value="000000" maxlength="6" aria-label="Hex color" />
+              </div>
+            </div>
+          </div>
+        </div>
         <button id="cart-download" class="cart-download" disabled>
           Download <span id="cart-download-count">0</span> icon<span id="cart-download-s">s</span>
         </button>
@@ -328,28 +340,112 @@ const allIconsJson = JSON.stringify(manifest.icons);
       const cartDownloadS = document.getElementById('cart-download-s');
       const cartDownloadBtn = document.getElementById('cart-download') as HTMLButtonElement | null;
       const cartClearBtn = document.getElementById('cart-clear');
-      const cartColorInput = document.getElementById('cart-color') as HTMLInputElement | null;
+      const cartColorBtn = document.getElementById('cart-color-btn');
+      const cartColorSwatch = document.getElementById('cart-color-swatch') as HTMLElement | null;
+      const cartColorText = document.getElementById('cart-color-text') as HTMLElement | null;
+      const cartColorPop = document.getElementById('cart-color-pop');
+      const cartColorSwatches = document.getElementById('cart-color-swatches');
+      const cartColorHue = document.getElementById('cart-color-hue') as HTMLInputElement | null;
+      const cartColorHex = document.getElementById('cart-color-hex') as HTMLInputElement | null;
+
+      const PRESET_COLORS: Array<{ name: string; hex: string }> = [
+        { name: 'Black', hex: '000000' },
+        { name: 'White', hex: 'ffffff' },
+        { name: 'Red', hex: 'ef4444' },
+        { name: 'Orange', hex: 'f97316' },
+        { name: 'Yellow', hex: 'eab308' },
+        { name: 'Green', hex: '22c55e' },
+        { name: 'Blue', hex: '3b82f6' },
+        { name: 'Purple', hex: 'a855f7' },
+        { name: 'Pink', hex: 'ec4899' },
+      ];
 
       const selection: Array<{ url: string; name: string; slug: string }> = [];
       const seen = new Set<string>();
       const previews: Array<{ el: HTMLElement; anim: any }> = [];
-      let panelColor = '';
+      let panelColor = '#000000';
 
       function slugToFile(slug: string): string {
         return `${slug || 'icon'}.json`;
       }
 
-      function colorQuery(): string {
-        if (!panelColor) return '';
-        const sep = (url: string) => url.includes('?') ? '&' : '?';
-        return '';
+      function hslToHex(h: number, s: number, l: number): string {
+        s /= 100; l /= 100;
+        const k = (n: number) => (n + h / 30) % 12;
+        const a = s * Math.min(l, 1 - l);
+        const f = (n: number) => {
+          const c = l - a * Math.cos((Math.PI / 180) * k(n));
+          return Math.round(255 * c).toString(16).padStart(2, '0');
+        };
+        return `${f(0)}${f(8)}${f(4)}`;
       }
 
       function urlWithColor(url: string): string {
-        if (!panelColor) return url;
         const sep = url.includes('?') ? '&' : '?';
         return `${url}${sep}color=${panelColor.replace(/^#/, '')}`;
       }
+
+      function applyColor(hex: string, name?: string): void {
+        panelColor = `#${hex.replace(/^#/, '')}`;
+        if (cartColorSwatch) cartColorSwatch.style.background = panelColor;
+        if (cartColorText) cartColorText.textContent = name || panelColor.toUpperCase();
+        if (cartColorHex) cartColorHex.value = hex.replace(/^#/, '');
+        destroyPreviews();
+        renderCart();
+      }
+
+      function buildSwatches(): void {
+        if (!cartColorSwatches) return;
+        cartColorSwatches.innerHTML = '';
+        PRESET_COLORS.forEach((c) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'cart-color-swatch-btn' + (c.hex === '000000' ? ' active' : '');
+          b.style.background = `#${c.hex}`;
+          b.title = c.name;
+          b.setAttribute('aria-label', c.name);
+          b.addEventListener('click', () => {
+            applyColor(c.hex, c.name);
+            cartColorSwatches?.querySelectorAll('.cart-color-swatch-btn').forEach((el) => el.classList.remove('active'));
+            b.classList.add('active');
+            closePop();
+          });
+          cartColorSwatches.appendChild(b);
+        });
+      }
+
+      function openPop(): void {
+        cartColorPop?.removeAttribute('hidden');
+      }
+      function closePop(): void {
+        cartColorPop?.setAttribute('hidden', '');
+      }
+
+      cartColorBtn?.addEventListener('click', (e: Event) => {
+        e.stopPropagation();
+        if (cartColorPop?.hasAttribute('hidden')) openPop(); else closePop();
+      });
+
+      document.addEventListener('click', (e: Event) => {
+        if (!cartColorPop?.hasAttribute('hidden') &&
+            !(e.target as HTMLElement).closest('.cart-color-picker')) {
+          closePop();
+        }
+      });
+
+      cartColorHue?.addEventListener('input', () => {
+        const hex = hslToHex(Number(cartColorHue.value), 90, 50);
+        cartColorSwatches?.querySelectorAll('.cart-color-swatch-btn').forEach((el) => el.classList.remove('active'));
+        applyColor(hex, `#${hex.toUpperCase()}`);
+      });
+
+      cartColorHex?.addEventListener('input', () => {
+        const v = cartColorHex.value.replace(/[^0-9a-fA-F]/g, '').slice(0, 6);
+        if (v.length === 6) {
+          cartColorSwatches?.querySelectorAll('.cart-color-swatch-btn').forEach((el) => el.classList.remove('active'));
+          applyColor(v, `#${v.toUpperCase()}`);
+        }
+      });
 
       function renderPreview(stage: HTMLElement, item: { url: string }): void {
         async function load(): Promise<void> {
@@ -420,12 +516,6 @@ const allIconsJson = JSON.stringify(manifest.icons);
         const idx = Number(target.getAttribute('data-idx'));
         const removed = selection.splice(idx, 1)[0];
         if (removed) seen.delete(removed.url);
-        destroyPreviews();
-        renderCart();
-      });
-
-      cartColorInput?.addEventListener('input', () => {
-        panelColor = cartColorInput.value;
         destroyPreviews();
         renderCart();
       });
@@ -531,6 +621,7 @@ const allIconsJson = JSON.stringify(manifest.icons);
 
       cartDownloadBtn?.addEventListener('click', () => { downloadSelection(); });
 
+      buildSwatches();
       renderCart();
     })();
   </script>
