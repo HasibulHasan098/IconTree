@@ -344,6 +344,43 @@ input {
   border-color: var(--color-success);
 }
 
+.icon-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity var(--transition-base), transform var(--transition-base);
+}
+
+.icon-card:hover .icon-actions,
+.icon-card:focus-visible .icon-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.download-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.download-btn:hover {
+  background: var(--color-accent-light);
+  color: var(--color-text);
+  border-color: rgba(28, 28, 28, 0.4);
+}
+
 .empty-state {
   text-align: center;
   padding: 80px 20px;

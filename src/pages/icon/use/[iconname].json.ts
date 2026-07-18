@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { getIconBySlug } from '../../../lib/manifest';
 import { readIconFile } from '../../../lib/icon-data';
 
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, url }) => {
   const slug = params.iconname ?? '';
   const entry = getIconBySlug(slug);
 
@@ -13,7 +13,8 @@ export const GET: APIRoute = async ({ params }) => {
     });
   }
 
-  const data = readIconFile(slug);
+  const color = url.searchParams.get('color') ?? undefined;
+  const data = readIconFile(slug, color);
   if (!data) {
     return new Response(JSON.stringify({ error: 'icon file missing', name: slug }), {
       status: 404,

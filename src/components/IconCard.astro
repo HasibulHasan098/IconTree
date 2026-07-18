@@ -12,12 +12,21 @@ const { name, slug, url } = Astro.props;
 
 <div class="icon-card" tabindex="0" role="button" aria-label={`Copy ${name} JSON`}>
   <IconPlayer slug={slug} url={url} name={name} />
-  <button class="copy-btn" aria-label="Copy JSON" title="Copy JSON">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-    </svg>
-  </button>
+  <div class="icon-actions">
+    <button class="copy-btn" aria-label="Copy JSON" title="Copy JSON">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+      </svg>
+    </button>
+    <button class="download-btn" aria-label="Download JSON" title="Download JSON">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+    </button>
+  </div>
   <span class="icon-name">{name}</span>
 </div>
 
@@ -27,6 +36,7 @@ const { name, slug, url } = Astro.props;
 
     cards.forEach((card: HTMLElement) => {
       const btn = card.querySelector('.copy-btn') as HTMLElement | null;
+      const downloadBtn = card.querySelector('.download-btn') as HTMLElement | null;
 
       async function copyJson(e: Event): Promise<void> {
         e.stopPropagation();
@@ -54,7 +64,28 @@ const { name, slug, url } = Astro.props;
         }
       }
 
+      async function downloadJson(e: Event): Promise<void> {
+        e.stopPropagation();
+        try {
+          const url = card.querySelector('.icon-preview')?.getAttribute('data-url');
+          if (!url) return;
+
+          const response = await fetch(url);
+          const blob = await response.blob();
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `${url.split('/').pop() || 'icon'}.json`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(a.href);
+        } catch (e) {
+          console.error('Failed to download:', e);
+        }
+      }
+
       btn?.addEventListener('click', (e: Event) => copyJson(e));
+      downloadBtn?.addEventListener('click', (e: Event) => downloadJson(e));
 
       card.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ') {
