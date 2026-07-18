@@ -61,7 +61,8 @@ You have two options:
 1. Server-side recolor (recommended — simplest, no runtime color code):
    When downloading the icon at design time, append a hex color to the fetch URL:
    GET {baseUrl}/icon/use/<iconname>.json?color=<hex>
-   Example: {baseUrl}/icon/use/arrow-right-bold.json?color=%23ff0000  (URL-encode the leading # as %23)
+   Example: {baseUrl}/icon/use/arrow-right-bold.json?color=ff0000
+   The leading # is optional — use just the code, e.g. color=ff0000 or color=%23ff0000 both work.
    The returned JSON already has its fill/stroke recolored — bundle THAT file locally and use it in production.
 
 2. Runtime recolor in the app, using the platform's Lottie color override method (dynamic properties, color filters, or JSON preprocessing that swaps fill/stroke values). Use this only if the app must recolor at runtime.

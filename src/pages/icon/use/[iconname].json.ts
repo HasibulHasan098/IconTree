@@ -13,7 +13,8 @@ export const GET: APIRoute = async ({ params, url }) => {
     });
   }
 
-  const color = url.searchParams.get('color') ?? undefined;
+  const rawColor = url.searchParams.get('color') ?? undefined;
+  const color = rawColor ? rawColor.replace(/^#/, '') : undefined;
   const data = readIconFile(slug, color);
   if (!data) {
     return new Response(JSON.stringify({ error: 'icon file missing', name: slug }), {

@@ -228,7 +228,7 @@ Use manual mode when you already know which icons you want and do not need runti
       </div>
       <p>Returns the raw Lottie JSON for one icon.</p>
       <ul>
-        <li><code>color</code> - Optional hex color (e.g. <code>%23ff0000</code>). Recolors the icon’s fill/stroke to match your theme. URL-encode the leading <code>#</code>.</li>
+        <li><code>color</code> - Optional hex color (e.g. <code>ff0000</code>). Recolors the icon’s fill/stroke to match your theme. The leading <code>#</code> is optional.</li>
       </ul>
     </div>
 
@@ -303,10 +303,10 @@ Use manual mode when you already know which icons you want and do not need runti
       with its fill/stroke (<code>fl</code>/<code>st</code>/<code>gf</code>) colors swapped to your hex value — no runtime
       color code needed in your app.
     </p>
-    <pre><code>GET ${baseUrl}/icon/use/arrow-right-bold.json?color=%23ff0000
+    <pre><code>GET ${baseUrl}/icon/use/arrow-right-bold.json?color=ff0000
 
-# URL-encode the leading # as %23
-# Valid hex: RRGGBB or RRGGBBAA, with or without #</code></pre>
+# The leading # is optional — use just the code: color=ff0000 or color=%23ff0000 both work.
+# Valid hex: RRGGBB or RRGGBBAA (with or without #)</code></pre>
     <p>
       Download that recolored JSON and bundle it locally (per the workflow above). For light/dark support, fetch and
       bundle two variants — e.g. <code>?color=%23222</code> for light and <code>?color=%23fff</code> for dark.
