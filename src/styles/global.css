@@ -611,21 +611,15 @@ main .container {
   outline-offset: 2px;
 }
 
-.cart-color-custom {
+.cart-color-wheel {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  justify-content: center;
+  margin: 4px 0 10px;
 }
 
-.cart-color-hue {
-  width: 100%;
-  height: 14px;
-  border: none;
-  border-radius: 7px;
-  background: linear-gradient(to right,
-    #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
-  cursor: pointer;
-  padding: 0;
+.cart-color-wheel :global(.iro-wheel),
+.cart-color-wheel :global(.iro-slider) {
+  margin: 0 auto;
 }
 
 .cart-color-hex {

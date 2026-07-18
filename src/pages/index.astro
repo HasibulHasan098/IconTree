@@ -78,12 +78,10 @@ const allIconsJson = JSON.stringify(manifest.icons);
           </button>
           <div id="cart-color-pop" class="cart-color-pop" hidden>
             <div class="cart-color-swatches" id="cart-color-swatches"></div>
-            <div class="cart-color-custom">
-              <input type="range" id="cart-color-hue" class="cart-color-hue" min="0" max="360" value="0" aria-label="Hue" />
-              <div class="cart-color-hex">
-                <span>#</span>
-                <input type="text" id="cart-color-hex" class="cart-color-hex-input" value="000000" maxlength="6" aria-label="Hex color" />
-              </div>
+            <div id="cart-color-wheel" class="cart-color-wheel"></div>
+            <div class="cart-color-hex">
+              <span>#</span>
+              <input type="text" id="cart-color-hex" class="cart-color-hex-input" value="000000" maxlength="6" aria-label="Hex color" />
             </div>
           </div>
         </div>
@@ -345,7 +343,7 @@ const allIconsJson = JSON.stringify(manifest.icons);
       const cartColorText = document.getElementById('cart-color-text') as HTMLElement | null;
       const cartColorPop = document.getElementById('cart-color-pop');
       const cartColorSwatches = document.getElementById('cart-color-swatches');
-      const cartColorHue = document.getElementById('cart-color-hue') as HTMLInputElement | null;
+      const cartColorWheel = document.getElementById('cart-color-wheel');
       const cartColorHex = document.getElementById('cart-color-hex') as HTMLInputElement | null;
 
       const PRESET_COLORS: Array<{ name: string; hex: string }> = [
@@ -364,20 +362,10 @@ const allIconsJson = JSON.stringify(manifest.icons);
       const seen = new Set<string>();
       const previews: Array<{ el: HTMLElement; anim: any }> = [];
       let panelColor = '#000000';
+      let colorWheel: any = null;
 
       function slugToFile(slug: string): string {
         return `${slug || 'icon'}.json`;
-      }
-
-      function hslToHex(h: number, s: number, l: number): string {
-        s /= 100; l /= 100;
-        const k = (n: number) => (n + h / 30) % 12;
-        const a = s * Math.min(l, 1 - l);
-        const f = (n: number) => {
-          const c = l - a * Math.cos((Math.PI / 180) * k(n));
-          return Math.round(255 * c).toString(16).padStart(2, '0');
-        };
-        return `${f(0)}${f(8)}${f(4)}`;
       }
 
       function urlWithColor(url: string): string {
@@ -385,11 +373,12 @@ const allIconsJson = JSON.stringify(manifest.icons);
         return `${url}${sep}color=${panelColor.replace(/^#/, '')}`;
       }
 
-      function applyColor(hex: string, name?: string): void {
+      function applyColor(hex: string, name?: string, fromWheel = false): void {
         panelColor = `#${hex.replace(/^#/, '')}`;
         if (cartColorSwatch) cartColorSwatch.style.background = panelColor;
         if (cartColorText) cartColorText.textContent = name || panelColor.toUpperCase();
-        if (cartColorHex) cartColorHex.value = hex.replace(/^#/, '');
+        if (cartColorHex && !fromWheel) cartColorHex.value = hex.replace(/^#/, '');
+        if (colorWheel && !fromWheel) colorWheel.setColors(panelColor);
         destroyPreviews();
         renderCart();
       }
@@ -416,9 +405,33 @@ const allIconsJson = JSON.stringify(manifest.icons);
 
       function openPop(): void {
         cartColorPop?.removeAttribute('hidden');
+        if (cartColorWheel && !colorWheel) initWheel();
       }
       function closePop(): void {
         cartColorPop?.setAttribute('hidden', '');
+      }
+
+      async function initWheel(): Promise<void> {
+        if (!cartColorWheel || colorWheel) return;
+        try {
+          const iro = (await import('https://cdn.jsdelivr.net/npm/@jaames/iro@5/dist/iro.es.js')).default;
+          colorWheel = iro.ColorPicker(cartColorWheel, {
+            width: 180,
+            color: panelColor,
+            borderWidth: 1,
+            borderColor: '#d8d3c7',
+            layout: [
+              { component: iro.ui.Wheel },
+              { component: iro.ui.Slider, options: { sliderType: 'value' } },
+            ],
+          });
+          colorWheel.on('input', (color: any) => {
+            cartColorSwatches?.querySelectorAll('.cart-color-swatch-btn').forEach((el) => el.classList.remove('active'));
+            applyColor(color.hexString, color.hexString, true);
+          });
+        } catch (e) {
+          console.error('Color wheel failed to load:', e);
+        }
       }
 
       cartColorBtn?.addEventListener('click', (e: Event) => {
@@ -431,12 +444,6 @@ const allIconsJson = JSON.stringify(manifest.icons);
             !(e.target as HTMLElement).closest('.cart-color-picker')) {
           closePop();
         }
-      });
-
-      cartColorHue?.addEventListener('input', () => {
-        const hex = hslToHex(Number(cartColorHue.value), 90, 50);
-        cartColorSwatches?.querySelectorAll('.cart-color-swatch-btn').forEach((el) => el.classList.remove('active'));
-        applyColor(hex, `#${hex.toUpperCase()}`);
       });
 
       cartColorHex?.addEventListener('input', () => {
