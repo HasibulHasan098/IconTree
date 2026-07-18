@@ -435,7 +435,7 @@ const allIconsJson = JSON.stringify(manifest.icons);
               { component: Iro.ui.Slider, options: { sliderType: 'value' } },
             ],
           });
-          colorWheel.on('input:change', (color: any) => {
+          colorWheel.on('input:move', (color: any) => {
             cartColorSwatches?.querySelectorAll('.cart-color-swatch-btn').forEach((el) => el.classList.remove('active'));
             applyColor(color.hexString, color.hexString, true);
           });
@@ -448,7 +448,7 @@ const allIconsJson = JSON.stringify(manifest.icons);
       function openPop(): void {
         cartColorPop?.removeAttribute('hidden');
         if (cartColorWheel && !colorWheel) {
-          requestAnimationFrame(() => { initWheel(); });
+          setTimeout(() => { initWheel(); }, 100);
         }
       }
 
@@ -463,6 +463,8 @@ const allIconsJson = JSON.stringify(manifest.icons);
           closePop();
         }
       });
+
+      cartColorPop?.addEventListener('pointerdown', (e) => e.stopPropagation());
 
       cartColorHex?.addEventListener('input', () => {
         const v = cartColorHex.value.replace(/[^0-9a-fA-F]/g, '').slice(0, 6);

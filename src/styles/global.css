@@ -617,6 +617,7 @@ main .container {
   align-items: center;
   margin: 4px 0 10px;
   min-height: 200px;
+  touch-action: none;
 }
 
 .cart-color-fallback {
