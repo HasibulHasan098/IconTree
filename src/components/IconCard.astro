@@ -10,20 +10,13 @@ interface Props {
 const { name, slug, url } = Astro.props;
 ---
 
-<div class="icon-card" tabindex="0" role="button" aria-label={`Copy ${name} JSON`}>
+<div class="icon-card" tabindex="0" role="button" aria-label={`Add ${name} to selection`}>
   <IconPlayer slug={slug} url={url} name={name} />
   <div class="icon-actions">
-    <button class="copy-btn" aria-label="Copy JSON" title="Copy JSON">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-      </svg>
-    </button>
-    <button class="download-btn" aria-label="Download JSON" title="Download JSON">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-        <polyline points="7 10 12 15 17 10" />
-        <line x1="12" y1="15" x2="12" y2="3" />
+    <button class="add-btn" data-add name={name} slug={slug} url={url} aria-label={`Add ${name} to selection`} title="Add to selection">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
       </svg>
     </button>
   </div>
@@ -35,62 +28,28 @@ const { name, slug, url } = Astro.props;
     const cards = Array.from(document.querySelectorAll('.icon-card')) as HTMLElement[];
 
     cards.forEach((card: HTMLElement) => {
-      const btn = card.querySelector('.copy-btn') as HTMLElement | null;
-      const downloadBtn = card.querySelector('.download-btn') as HTMLElement | null;
+      const addBtn = card.querySelector('.add-btn') as HTMLElement | null;
+      const preview = card.querySelector('.icon-preview') as HTMLElement | null;
 
-      async function copyJson(e: Event): Promise<void> {
+      function addToCart(e: Event): void {
         e.stopPropagation();
-        try {
-          const url = card.querySelector('.icon-preview')?.getAttribute('data-url');
-          if (!url) return;
-
-          const response = await fetch(url);
-          const text = await response.text();
-          await navigator.clipboard.writeText(text);
-
-          if (btn) {
-            btn.classList.add('copied');
-            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
-          }
-
-          setTimeout(() => {
-            if (btn) {
-              btn.classList.remove('copied');
-              btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
-            }
-          }, 2000);
-        } catch (e) {
-          console.error('Failed to copy:', e);
+        const url = preview?.getAttribute('data-url');
+        const name = preview?.getAttribute('data-name') || '';
+        const slug = preview?.getAttribute('data-slug') || '';
+        if (!url) return;
+        window.dispatchEvent(new CustomEvent('iconadd', { detail: { url, name, slug } }));
+        if (addBtn) {
+          addBtn.classList.add('added');
+          setTimeout(() => addBtn.classList.remove('added'), 600);
         }
       }
 
-      async function downloadJson(e: Event): Promise<void> {
-        e.stopPropagation();
-        try {
-          const url = card.querySelector('.icon-preview')?.getAttribute('data-url');
-          if (!url) return;
-
-          const response = await fetch(url);
-          const blob = await response.blob();
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = `${url.split('/').pop() || 'icon'}.json`;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          URL.revokeObjectURL(a.href);
-        } catch (e) {
-          console.error('Failed to download:', e);
-        }
-      }
-
-      btn?.addEventListener('click', (e: Event) => copyJson(e));
-      downloadBtn?.addEventListener('click', (e: Event) => downloadJson(e));
+      addBtn?.addEventListener('click', addToCart);
 
       card.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          copyJson(e);
+          addToCart(e);
         }
       });
     });

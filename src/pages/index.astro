@@ -62,6 +62,35 @@ const allIconsJson = JSON.stringify(manifest.icons);
     </div>
   </main>
 
+  <button id="cart-toggle" class="cart-toggle" aria-label="Open selection" title="Selection">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+      <polyline points="17 21 17 13 7 13 7 21" />
+      <polyline points="7 3 7 8 15 8" />
+    </svg>
+    <span id="cart-count" class="cart-count" style="display: none;">0</span>
+  </button>
+
+  <div id="cart-drawer" class="cart-drawer" aria-hidden="true">
+    <div class="cart-drawer-header">
+      <h3>Selected Icons</h3>
+      <button id="cart-close" class="cart-close" aria-label="Close selection">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+    <div id="cart-items" class="cart-items"></div>
+    <div class="cart-empty" id="cart-empty">No icons selected yet. Click + on any icon to add it.</div>
+    <div class="cart-drawer-footer">
+      <button id="cart-clear" class="cart-clear">Clear</button>
+      <button id="cart-download" class="cart-download" disabled>
+        Download all (<span id="cart-download-count">0</span>)
+      </button>
+    </div>
+  </div>
+  <div id="cart-overlay" class="cart-overlay"></div>
   <script is:inline define:vars={{ allIconsData: allIconsJson }}>
     window.__ICON_MANIFEST__ = JSON.parse(allIconsData);
   </script>
@@ -105,20 +134,13 @@ const allIconsJson = JSON.stringify(manifest.icons);
 
       function createIconMarkup(icon: { name: string; slug: string; url: string }) {
         return `
-          <div class="icon-card" tabindex="0" role="button" aria-label="Copy ${icon.name} JSON">
+          <div class="icon-card" tabindex="0" role="button" aria-label="Add ${icon.name} to selection">
             <div class="icon-preview" data-slug="${icon.slug}" data-url="${icon.url}" data-name="${icon.name}" role="img" aria-label="${icon.name} animation preview"></div>
             <div class="icon-actions">
-              <button class="copy-btn" aria-label="Copy JSON" title="Copy JSON">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                </svg>
-              </button>
-              <button class="download-btn" aria-label="Download JSON" title="Download JSON">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
+              <button class="add-btn" data-add name="${icon.name}" slug="${icon.slug}" url="${icon.url}" aria-label="Add ${icon.name} to selection" title="Add to selection">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
               </button>
             </div>
@@ -168,7 +190,6 @@ const allIconsJson = JSON.stringify(manifest.icons);
           if (card.dataset.enhanced === 'true') return;
           card.dataset.enhanced = 'true';
 
-          const btn = card.querySelector('.copy-btn') as HTMLElement | null;
           const preview = card.querySelector('.icon-preview') as HTMLElement | null;
           const url = preview?.getAttribute('data-url') || '';
           let animation: any = null;
@@ -238,55 +259,22 @@ const allIconsJson = JSON.stringify(manifest.icons);
 
           io.observe(preview);
 
-          async function copyJson(e: Event): Promise<void> {
+          function addToCart(e: Event): void {
             e.stopPropagation();
-            try {
-              const response = await fetch(url);
-              const text = await response.text();
-              await navigator.clipboard.writeText(text);
-
-              if (btn) {
-                btn.classList.add('copied');
-                btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
-              }
-
-              setTimeout(() => {
-                if (btn) {
-                  btn.classList.remove('copied');
-                  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
-                }
-              }, 2000);
-            } catch (e) {
-              console.error('Failed to copy:', e);
+            window.dispatchEvent(new CustomEvent('iconadd', {
+              detail: { url, name, slug },
+            }));
+            const addBtn = card.querySelector('.add-btn') as HTMLElement | null;
+            if (addBtn) {
+              addBtn.classList.add('added');
+              setTimeout(() => addBtn.classList.remove('added'), 600);
             }
           }
-
-          btn?.addEventListener('click', (e: Event) => copyJson(e));
-
-          async function downloadJson(e: Event): Promise<void> {
-            e.stopPropagation();
-            try {
-              const response = await fetch(url);
-              const blob = await response.blob();
-              const a = document.createElement('a');
-              a.href = URL.createObjectURL(blob);
-              a.download = `${url.split('/').pop() || 'icon'}.json`;
-              document.body.appendChild(a);
-              a.click();
-              a.remove();
-              URL.revokeObjectURL(a.href);
-            } catch (e) {
-              console.error('Failed to download:', e);
-            }
-          }
-
-          const downloadBtn = card.querySelector('.download-btn') as HTMLElement | null;
-          downloadBtn?.addEventListener('click', (e: Event) => downloadJson(e));
 
           card.addEventListener('keydown', (e: KeyboardEvent) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
-              copyJson(e);
+              addToCart(e);
             }
           });
         });
@@ -338,6 +326,201 @@ const allIconsJson = JSON.stringify(manifest.icons);
         filteredIcons = getFilteredIcons();
         await loadPage(1, true);
       });
+
+      /* ---------- Selection cart + drawer ---------- */
+      const cartToggle = document.getElementById('cart-toggle');
+      const cartDrawer = document.getElementById('cart-drawer');
+      const cartOverlay = document.getElementById('cart-overlay');
+      const cartClose = document.getElementById('cart-close');
+      const cartItems = document.getElementById('cart-items');
+      const cartEmpty = document.getElementById('cart-empty');
+      const cartCount = document.getElementById('cart-count');
+      const cartDownloadCount = document.getElementById('cart-download-count');
+      const cartDownloadBtn = document.getElementById('cart-download') as HTMLButtonElement | null;
+      const cartClearBtn = document.getElementById('cart-clear');
+
+      const selection: Array<{ url: string; name: string; slug: string }> = [];
+      const seen = new Set<string>();
+
+      function slugToFile(slug: string): string {
+        return `${slug || 'icon'}.json`;
+      }
+
+      function renderCart(): void {
+        if (!cartItems) return;
+        cartItems.innerHTML = '';
+        selection.forEach((item, idx) => {
+          const row = document.createElement('div');
+          row.className = 'cart-item';
+          row.innerHTML = `
+            <span class="cart-item-name">${item.name}</span>
+            <button class="cart-item-remove" data-idx="${idx}" aria-label="Remove ${item.name}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>`;
+          cartItems.appendChild(row);
+        });
+
+        const n = selection.length;
+        if (cartCount) {
+          cartCount.textContent = String(n);
+          cartCount.style.display = n > 0 ? 'flex' : 'none';
+        }
+        if (cartDownloadCount) cartDownloadCount.textContent = String(n);
+        if (cartEmpty) cartEmpty.style.display = n === 0 ? 'block' : 'none';
+        if (cartItems) cartItems.style.display = n === 0 ? 'none' : 'block';
+        if (cartDownloadBtn) cartDownloadBtn.disabled = n === 0;
+      }
+
+      function openCart(): void {
+        cartDrawer?.classList.add('open');
+        cartOverlay?.classList.add('show');
+        cartDrawer?.setAttribute('aria-hidden', 'false');
+      }
+      function closeCart(): void {
+        cartDrawer?.classList.remove('open');
+        cartOverlay?.classList.remove('show');
+        cartDrawer?.setAttribute('aria-hidden', 'true');
+      }
+
+      window.addEventListener('iconadd', (e: any) => {
+        const { url, name, slug } = e.detail;
+        if (seen.has(url)) return;
+        seen.add(url);
+        selection.push({ url, name, slug });
+        renderCart();
+        openCart();
+      });
+
+      cartToggle?.addEventListener('click', openCart);
+      cartClose?.addEventListener('click', closeCart);
+      cartOverlay?.addEventListener('click', closeCart);
+
+      cartItems?.addEventListener('click', (e: Event) => {
+        const target = (e.target as HTMLElement).closest('.cart-item-remove') as HTMLElement | null;
+        if (!target) return;
+        const idx = Number(target.getAttribute('data-idx'));
+        const removed = selection.splice(idx, 1)[0];
+        if (removed) seen.delete(removed.url);
+        renderCart();
+      });
+
+      cartClearBtn?.addEventListener('click', () => {
+        selection.length = 0;
+        seen.clear();
+        renderCart();
+      });
+
+      function triggerDownload(blob: Blob, filename: string): void {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      }
+
+      function crc32(bytes: Uint8Array): number {
+        let crc = ~0;
+        for (let i = 0; i < bytes.length; i++) {
+          crc ^= bytes[i];
+          for (let k = 0; k < 8; k++) {
+            crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
+          }
+        }
+        return ~crc >>> 0;
+      }
+
+      function buildZip(files: Array<{ name: string; data: Uint8Array }>): Blob {
+        const enc = new TextEncoder();
+        const chunks: Uint8Array[] = [];
+        const central: Uint8Array[] = [];
+        let offset = 0;
+
+        const u16 = (n: number) => new Uint8Array([n & 0xff, (n >>> 8) & 0xff]);
+        const u32 = (n: number) => new Uint8Array([n & 0xff, (n >>> 8) & 0xff, (n >>> 16) & 0xff, (n >>> 24) & 0xff]);
+
+        files.forEach((f) => {
+          const nameBytes = enc.encode(f.name);
+          const crc = crc32(f.data);
+          const size = f.data.length;
+
+          const local = new Uint8Array([
+            0x50, 0x4b, 0x03, 0x04,        // local file header sig
+            ...u16(20),                    // version needed
+            ...u16(0),                     // flags
+            ...u16(0),                     // method (store)
+            ...u16(0), ...u16(0),          // mod time/date
+            ...u32(crc),                   // crc32
+            ...u32(size), ...u32(size),    // compressed / uncompressed size
+            ...u16(nameBytes.length),      // name length
+            ...u16(0),                     // extra length
+            ...nameBytes,                  // name
+            ...f.data,                     // content
+          ]);
+          chunks.push(local);
+          const localOffset = offset;
+          offset += local.length;
+
+          const cd = new Uint8Array([
+            0x50, 0x4b, 0x01, 0x02,        // central dir header sig
+            ...u16(20),                    // version made by
+            ...u16(20),                    // version needed
+            ...u16(0),                     // flags
+            ...u16(0),                     // method
+            ...u16(0), ...u16(0),          // mod time/date
+            ...u32(crc),
+            ...u32(size), ...u32(size),
+            ...u16(nameBytes.length),
+            ...u16(0), ...u16(0), ...u16(0),
+            ...u32(0),
+            ...u32(localOffset),
+            ...nameBytes,
+          ]);
+          central.push(cd);
+        });
+
+        const centralSize = central.reduce((s, c) => s + c.length, 0);
+        const centralOffset = offset;
+
+        const end = new Uint8Array([
+          0x50, 0x4b, 0x05, 0x06,          // end of central dir sig
+          ...u16(0), ...u16(0),
+          ...u16(files.length), ...u16(files.length),
+          ...u32(centralSize),
+          ...u32(centralOffset),
+          ...u16(0),
+        ]);
+
+        return new Blob([...chunks, ...central, end], { type: 'application/zip' });
+      }
+
+      async function downloadSelection(): Promise<void> {
+        if (selection.length === 0) return;
+        try {
+          if (selection.length === 1) {
+            const item = selection[0];
+            const res = await fetch(item.url);
+            const blob = await res.blob();
+            triggerDownload(blob, slugToFile(item.slug));
+          } else {
+            const files = await Promise.all(selection.map(async (item) => {
+              const res = await fetch(item.url);
+              const buf = new Uint8Array(await res.arrayBuffer());
+              return { name: slugToFile(item.slug), data: buf };
+            }));
+            triggerDownload(buildZip(files), 'icontree-icons.zip');
+          }
+        } catch (e) {
+          console.error('Download failed:', e);
+        }
+      }
+
+      cartDownloadBtn?.addEventListener('click', () => { downloadSelection(); });
+
+      renderCart();
     })();
   </script>
 </Layout>
