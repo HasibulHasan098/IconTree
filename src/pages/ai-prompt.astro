@@ -3,99 +3,67 @@ import Layout from '../layouts/Layout.astro';
 
 const baseUrl = 'https://icontree.cosmoscope.workers.dev';
 
-const promptText = `IconTree Icon Integration Prompt
-Task: Integrate IconTree Icons Into Existing App
-Objective
-Add IconTree-powered Lottie icons to an existing app screen/feature. This is an INTEGRATION task,
-not a new-product task.
-Target
-App/Framework: [FILL IN — e.g. React + Vite, Flutter, React Native, plain HTML/JS]
-Screen or component being modified: [FILL IN — e.g. "Sidebar nav", "Settings screen"]
-Existing Lottie library already in use (if any): [FILL IN, e.g. lottie-react, lottie-web, lottie_flutter, lottie-react-native]
-Format Note
-IconTree only serves Lottie animation JSON — there is no SVG format available from this source.
-Do not write SVG-loading, SVG-parsing, or SVG-fallback code for these icons. Every icon, in both
-modes below, is a .json file passed to the platform's Lottie player component.
-Hard Constraints — Do NOT
-Do NOT build a new icon library, browser, or gallery UI.
-Do NOT build an icon marketplace or catalog page.
-Do NOT recreate or clone IconTree's own search UI/backend.
-Do NOT invent API fields, endpoints, or response properties beyond what's specified below.
-Do NOT introduce a new design system, new color tokens, or new layout patterns — reuse what
-the app already has (spacing, sizing, theme colors, component conventions).
-Do NOT add a search UI if the request is manual/local mode.
-Do NOT make network calls if the request is manual/local mode.
-Do NOT write SVG handling code of any kind — IconTree is Lottie-JSON only.
-Do NOT output unrelated boilerplate (no new app scaffold, no README, no unrelated files) —
-only the code needed for this specific feature.
-IconTree Reference
-Base URL: ${baseUrl}
-Mode 1 — AI-assisted icon selection (design-time only, NOT shipped in the app)
-Use this mode yourself, as the coding assistant, to find and choose the right icon(s) before writing
-app code. The app itself must NEVER call /icon/search at runtime — this is not a feature to build,
-it's a lookup you perform once, offline, while authoring the code.
-Endpoint: GET /icon/search
-Query params (only these — no others):
-q — search term (string)
-category — category filter (string, optional)
-page — page number (integer, optional)
-pageSize — results per page (integer, optional)
-Response shape (assume only these fields exist):
-Selection workflow:
-1. Call GET ${baseUrl}/icon/search?q=...&category=...&page=...&pageSize=...
-2. Read response.results[] , pick the appropriate icon(s)
-3. Build full URL: ${baseUrl}{result.url}
-4. Fetch that URL to get the Lottie JSON animation data
-5. Save the JSON as a local asset in the app (per Mode 2's file location) and write the final
-integration using Mode 2 — static import, no network call in the shipped app
-If the user explicitly wants a live, in-app icon search/picker (not just AI-assisted selection at build
-time), stop and confirm that requirement separately — it is out of scope for a normal integration
-and conflicts with the "Do NOT build a search UI" constraint above.
-Mode 2 — Manual mode (pre-downloaded local JSON)
-Use when the specific icon .json files have already been chosen/downloaded and bundled into the
-app (including icons selected via Mode 1 above).
-Assume files already exist locally at: [FILL IN — e.g. src/assets/icons/ , assets/lottie/ , public/icons/ ]
-Load them the standard way for the platform (import, require, asset bundle reference, etc. —
-whichever is idiomatic for the stack above)
-Pass the loaded JSON into the platform's Lottie player component
-No network requests, no search params, no dynamic fetching
-Icon Color / Theming
-IconTree icons ship with a fixed fill color baked into the Lottie JSON (often white or black) — this
-is NOT guaranteed to match the app's theme.
-Do NOT assume the source color is usable as-is in both light and dark themes.
-Recolor the icon to match the app's existing icon/theme token, using whichever mechanism is
-idiomatic for the platform's Lottie player (e.g. runtime color callbacks/dynamic properties,
-colorFilters, or a JSON preprocessing step that swaps fill/stroke color values before passing to
-the player).
-The resulting color must respond to the app's current theme (light/dark or custom), not be
-hardcoded to the source JSON's color.
-Implementation Requirements
-1. Match the existing component structure and naming conventions already used in the app.
-2. Reuse existing styling (className/theme/tokens) — do not hardcode new colors, spacing, or
-sizes unless the current design system requires a new token for this feature.
-3. Icon size, loop, autoplay, and other Lottie player props should be configurable via
-props/parameters, not hardcoded, unless the app's convention is to hardcode such values
+const promptText = `# IconTree Integration
+
+Integrate IconTree Lottie icons into an EXISTING app.
+
+## Target
+Framework: [React / Flutter / React Native / etc.]
+Component: [component name]
+Lottie library: [lottie-react, lottie_flutter, etc.]
+Local icon path: [e.g. src/assets/icons]
+
+## Rules
+- Integrate into the existing UI only.
+- Do NOT create an icon library, gallery, marketplace, search page, or new design system.
+- Reuse existing components, spacing, colors, theme, and naming.
+- Output only the required code.
+- No README, boilerplate, explanations, or unrelated files.
+- IconTree provides ONLY Lottie (.json). Never use SVG.
+
+## Design-time icon selection (AI only)
+Base URL:
+${baseUrl}
+
+Search:
+GET /icon/search?q=<query>&category=<optional>&page=<optional>&pageSize=<optional>
+
+Response:
 {
-"results": [
-{ "url": "/relative/path/to/icon.json", "...other fields may exist but are NOT to be relied on unless explicitly requested": true }
-]
+  "results": [
+    { "url": "/path/icon.json" }
+  ]
 }
-elsewhere.
-4. Handle loading and error states appropriately for AI-assisted fetch-at-authoring-time issues
-(e.g. fetch failure, empty results during selection) — this does not apply to the shipped app in
-manual mode.
-5. Manual mode (the shipped code) requires no loading/error state beyond standard asset-not-
-found handling, since data is local and bundled.
-6. Code must be directly droppable into the existing codebase — assume it will be pasted into the
-file(s) indicated in "Target" above.
-Output Format
-Return only the code required for this feature (component(s)/function(s) needed).
-No extra scaffolding, no unrelated files, no explanatory essay — a short comment above non-
-obvious logic is fine.
-The final shipped code should reflect Mode 2 (local, static, themed) even if Mode 1 was used to
-select the icons.
-Production-ready: proper typing (if the stack uses TypeScript/Dart typing), no placeholder
-TODOs left unresolved, no console.log debugging left in.`;
+
+Workflow:
+1. Search.
+2. Pick the best icon.
+3. Download:
+   ${baseUrl}{url}
+4. Bundle the JSON locally.
+5. Final code must use the local asset only.
+
+Do NOT ship search requests in the app.
+
+If the user explicitly asks for an in-app icon picker/search UI, ask for confirmation because that is a different feature.
+
+## Runtime (production)
+- Import the local JSON.
+- Render using the existing Lottie library.
+- No network requests.
+- No dynamic fetching.
+
+## Theme
+IconTree colors are fixed.
+Replace them with the app's theme color using the platform's Lottie color override method (dynamic properties, color filters, JSON preprocessing, etc.).
+Icons must follow light/dark theme.
+
+## Component requirements
+- Follow existing architecture.
+- Keep size, loop, autoplay, etc. configurable via props unless the project already hardcodes them.
+- Use proper typing (TS/Dart if applicable).
+- Production-ready.
+- No console logs.`;
 ---
 
 <Layout title="IconTree - AI Prompt">
