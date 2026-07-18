@@ -74,7 +74,7 @@ const allIconsJson = JSON.stringify(manifest.icons);
         <div class="cart-color-picker">
           <button id="cart-color-btn" class="cart-color-btn" aria-label="Recolor icons" title="Recolor icons">
             <span class="cart-color-swatch" id="cart-color-swatch" style="background:#000000"></span>
-            <span class="cart-color-text">Black</span>
+            <span class="cart-color-text">#000000</span>
           </button>
           <div id="cart-color-pop" class="cart-color-pop" hidden>
             <div class="cart-color-swatches" id="cart-color-swatches"></div>
@@ -376,7 +376,7 @@ const allIconsJson = JSON.stringify(manifest.icons);
       function applyColor(hex: string, name?: string, fromWheel = false): void {
         panelColor = `#${hex.replace(/^#/, '')}`;
         if (cartColorSwatch) cartColorSwatch.style.background = panelColor;
-        if (cartColorText) cartColorText.textContent = name || panelColor.toUpperCase();
+        if (cartColorText) cartColorText.textContent = panelColor.toUpperCase();
         if (cartColorHex && !fromWheel) cartColorHex.value = hex.replace(/^#/, '');
         if (colorWheel && !fromWheel) colorWheel.setColors(panelColor);
         destroyPreviews();
