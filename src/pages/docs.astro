@@ -146,8 +146,8 @@ Use manual mode when you already know which icons you want and do not need runti
       <span class="doc-kicker">Docs</span>
       <h1>IconTree Integration Docs</h1>
       <p class="doc-lead">
-        These docs are for actually using IconTree in your app. Search icons, fetch the JSON, then render it with
-        your platform’s Lottie player.
+        These docs are for adding IconTree icons into an existing app. Pick icons with the search API, then ship them
+        as local Lottie JSON rendered by your platform’s Lottie player.
       </p>
     </section>
 
@@ -155,24 +155,36 @@ Use manual mode when you already know which icons you want and do not need runti
       <p><strong>Base URL</strong></p>
       <pre><code>{baseUrl}</code></pre>
       <p>
-        Search returns a relative <code>url</code> like <code>/icon/use/arrow-right-bold.json</code>.
-        Build the full JSON URL with <code>{baseUrl} + result.url</code>.
+        IconTree only serves <strong>Lottie animation JSON</strong> — there is no SVG format. Every icon is a
+        <code>.json</code> file passed to a Lottie player. Search returns a relative <code>url</code> like
+        <code>/icon/use/arrow-right-bold.json</code>; build the full URL with <code>{baseUrl} + result.url</code>.
       </p>
     </section>
 
-    <h2>How IconTree Works</h2>
-    <ol>
-      <li>Search the library with <code>/icon/search</code>.</li>
-      <li>Pick one item from <code>results[]</code>.</li>
-      <li>Take that item’s <code>url</code>.</li>
-      <li>Fetch the raw JSON from <code>{baseUrl} + result.url</code>.</li>
-      <li>Render it with a Lottie player.</li>
-    </ol>
-
-    <h2>Manual Use Without API</h2>
+    <h2>Format Note</h2>
     <p>
-      You do not have to call the API if you already know which icons you want. You can download the JSON files once
-      and keep them inside your app.
+      Do not write SVG-loading, SVG-parsing, or SVG-fallback code for these icons. There is no SVG available from this
+      source — every icon, in both modes below, is a <code>.json</code> file passed to the platform’s Lottie player
+      component.
+    </p>
+
+    <h2>How IconTree Works</h2>
+    <p>Integration is a two-step flow: <strong>select</strong> at design time, then <strong>ship locally</strong>.</p>
+    <ol>
+      <li>Search the library with <code>/icon/search</code> (you, the developer — not the running app).</li>
+      <li>Pick the icons you need from <code>results[]</code>.</li>
+      <li>Download each icon’s JSON (fetch <code>{baseUrl} + result.url</code>) and bundle it into your app.</li>
+      <li>Load the bundled JSON the idiomatic way for your stack and render it with a Lottie player.</li>
+    </ol>
+    <p>
+      The shipped app should <strong>never</strong> call <code>/icon/search</code> at runtime. Selection happens once,
+      while you author the code; the final code is local and static.
+    </p>
+
+    <h2>Mode 2 — Manual / Local (recommended for shipped apps)</h2>
+    <p>
+      You do not have to call the API at runtime. Once you have selected and downloaded the JSON files (using the
+      search endpoint at design time), keep them inside your app and load them locally.
     </p>
     <pre><code>{manualSteps}</code></pre>
 
@@ -200,7 +212,7 @@ Use manual mode when you already know which icons you want and do not need runti
         <span class="method">GET</span>
         <span class="endpoint-path">/icon/search</span>
       </div>
-      <p>Search by icon name, tags, or category.</p>
+      <p>Search by icon name, tags, or category. Use this at design time to <strong>pick</strong> icons — not from the shipped app.</p>
       <ul>
         <li><code>q</code> - Search text.</li>
         <li><code>category</code> - Optional category filter.</li>
@@ -218,6 +230,11 @@ Use manual mode when you already know which icons you want and do not need runti
     </div>
 
     <h2>Platform Guides</h2>
+    <p>
+      The snippets below show how to <strong>fetch an icon at design time</strong> (to download and bundle it). For the
+      shipped app, load the bundled JSON locally and render it with your Lottie player — do not keep the fetch in
+      production code.
+    </p>
 
     <div class="lang-grid">
       <section class="lang-card">
@@ -229,7 +246,7 @@ Use manual mode when you already know which icons you want and do not need runti
 
       <section class="lang-card">
         <h3>JavaScript</h3>
-        <p>Search the API, fetch the raw JSON, and hand it to <code>lottie-web</code> with the SVG renderer.</p>
+        <p>Search the API, fetch the raw JSON, and hand it to <code>lottie-web</code>.</p>
         <pre><code>{jsExample}</code></pre>
       </section>
 
@@ -260,14 +277,25 @@ Use manual mode when you already know which icons you want and do not need runti
 
     <h2>Best Practices</h2>
     <ul>
-      <li>Use manual mode when the icons are fixed and bundled with the app.</li>
-      <li>Use API mode when users need search, remote loading, or dynamic icon lists.</li>
-      <li>Use <code>pageSize=20</code> for infinite-scroll icon pickers.</li>
+      <li>Use the search API to <strong>select</strong> icons at design time; ship them as local JSON (Mode 2).</li>
+      <li>The running app should never call <code>/icon/search</code> — bundle the icons instead.</li>
+      <li>IconTree is Lottie-JSON only: no SVG loading/parsing/fallback code.</li>
+      <li>Recolor icons to your theme — the source JSON often ships a fixed fill (white/black) that won’t match light/dark.</li>
+      <li>Use <code>pageSize=20</code> when scrolling the search results during selection.</li>
       <li>Keep the original <code>name</code> and <code>slug</code> returned by the API.</li>
-      <li>Render with <code>renderer: 'svg'</code> for crisp UI icons.</li>
       <li>Cache fetched icon JSON where possible. Responses are immutable per build.</li>
       <li>If search returns no results, try a broader query or remove the category filter.</li>
     </ul>
+
+    <h2>Icon Color / Theming</h2>
+    <p>
+      IconTree icons ship with a fixed fill color baked into the Lottie JSON (often white or black) that is
+      <strong>not</strong> guaranteed to match your app’s theme. Recolor the icon to your existing icon/theme token
+      using the idiomatic mechanism for your platform’s Lottie player — e.g. runtime color callbacks / dynamic
+      properties, <code>colorFilters</code>, or a JSON preprocessing step that swaps fill/stroke color values before
+      passing the data to the player. The resulting color must follow your app’s current theme (light/dark/custom),
+      not the source JSON’s color.
+    </p>
 
     <h2>Source &amp; Repository</h2>
     <p>
