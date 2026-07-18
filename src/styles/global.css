@@ -614,12 +614,16 @@ main .container {
 .cart-color-wheel {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin: 4px 0 10px;
+  min-height: 200px;
 }
 
-.cart-color-wheel :global(.iro-wheel),
-.cart-color-wheel :global(.iro-slider) {
-  margin: 0 auto;
+.cart-color-fallback {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: 24px 8px;
 }
 
 .cart-color-hex {

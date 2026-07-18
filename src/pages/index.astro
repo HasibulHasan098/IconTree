@@ -414,23 +414,41 @@ const allIconsJson = JSON.stringify(manifest.icons);
       async function initWheel(): Promise<void> {
         if (!cartColorWheel || colorWheel) return;
         try {
-          const iro = (await import('https://cdn.jsdelivr.net/npm/@jaames/iro@5/dist/iro.es.js')).default;
-          colorWheel = iro.ColorPicker(cartColorWheel, {
+          if (!(window as any).iro) {
+            await new Promise<void>((resolve, reject) => {
+              const s = document.createElement('script');
+              s.src = 'https://cdn.jsdelivr.net/npm/@jaames/iro@5/dist/iro.min.js';
+              s.onload = () => resolve();
+              s.onerror = () => reject(new Error('Failed to load iro.js'));
+              document.head.appendChild(s);
+            });
+          }
+          const Iro = (window as any).iro;
+          if (!Iro?.ColorPicker) throw new Error('iro.ColorPicker not found');
+          colorWheel = new Iro.ColorPicker(cartColorWheel, {
             width: 180,
             color: panelColor,
             borderWidth: 1,
             borderColor: '#d8d3c7',
             layout: [
-              { component: iro.ui.Wheel },
-              { component: iro.ui.Slider, options: { sliderType: 'value' } },
+              { component: Iro.ui.Wheel },
+              { component: Iro.ui.Slider, options: { sliderType: 'value' } },
             ],
           });
-          colorWheel.on('input', (color: any) => {
+          colorWheel.on('input:change', (color: any) => {
             cartColorSwatches?.querySelectorAll('.cart-color-swatch-btn').forEach((el) => el.classList.remove('active'));
             applyColor(color.hexString, color.hexString, true);
           });
         } catch (e) {
           console.error('Color wheel failed to load:', e);
+          if (cartColorWheel) cartColorWheel.innerHTML = '<div class="cart-color-fallback">Color wheel unavailable</div>';
+        }
+      }
+
+      function openPop(): void {
+        cartColorPop?.removeAttribute('hidden');
+        if (cartColorWheel && !colorWheel) {
+          requestAnimationFrame(() => { initWheel(); });
         }
       }
 
