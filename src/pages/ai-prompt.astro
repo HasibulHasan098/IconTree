@@ -53,10 +53,20 @@ If the user explicitly asks for an in-app icon picker/search UI, ask for confirm
 - No network requests.
 - No dynamic fetching.
 
-## Theme
-IconTree colors are fixed.
-Replace them with the app's theme color using the platform's Lottie color override method (dynamic properties, color filters, JSON preprocessing, etc.).
-Icons must follow light/dark theme.
+## Theme / Icon Color
+IconTree icons ship with a fixed fill color baked into the Lottie JSON (often white or black) that does NOT match the app theme.
+
+You have two options:
+
+1. Server-side recolor (recommended — simplest, no runtime color code):
+   When downloading the icon at design time, append a hex color to the fetch URL:
+   GET {baseUrl}/icon/use/<iconname>.json?color=<hex>
+   Example: {baseUrl}/icon/use/arrow-right-bold.json?color=%23ff0000  (URL-encode the leading # as %23)
+   The returned JSON already has its fill/stroke recolored — bundle THAT file locally and use it in production.
+
+2. Runtime recolor in the app, using the platform's Lottie color override method (dynamic properties, color filters, or JSON preprocessing that swaps fill/stroke values). Use this only if the app must recolor at runtime.
+
+Icons must follow the app's light/dark theme. Prefer option 1 and bundle a per-theme colored JSON (e.g. one light, one dark) or recolor once per theme.
 
 ## Component requirements
 - Follow existing architecture.

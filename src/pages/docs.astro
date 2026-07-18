@@ -290,14 +290,33 @@ Use manual mode when you already know which icons you want and do not need runti
       <li>If search returns no results, try a broader query or remove the category filter.</li>
     </ul>
 
-    <h2>Icon Color / Theming</h2>
+    <h2>Icon Color &amp; Recoloring</h2>
     <p>
       IconTree icons ship with a fixed fill color baked into the Lottie JSON (often white or black) that is
-      <strong>not</strong> guaranteed to match your app’s theme. Recolor the icon to your existing icon/theme token
-      using the idiomatic mechanism for your platform’s Lottie player — e.g. runtime color callbacks / dynamic
-      properties, <code>colorFilters</code>, or a JSON preprocessing step that swaps fill/stroke color values before
-      passing the data to the player. The resulting color must follow your app’s current theme (light/dark/custom),
-      not the source JSON’s color.
+      <strong>not</strong> guaranteed to match your app’s theme. Recolor the icon so it follows your app’s
+      light/dark/custom theme instead of the source JSON’s color.
+    </p>
+
+    <h3>Recolor at download time (recommended)</h3>
+    <p>
+      The <code>/icon/use</code> endpoint accepts a <code>color</code> query parameter. It returns the same Lottie JSON
+      with its fill/stroke (<code>fl</code>/<code>st</code>/<code>gf</code>) colors swapped to your hex value — no runtime
+      color code needed in your app.
+    </p>
+    <pre><code>GET ${baseUrl}/icon/use/arrow-right-bold.json?color=%23ff0000
+
+# URL-encode the leading # as %23
+# Valid hex: RRGGBB or RRGGBBAA, with or without #</code></pre>
+    <p>
+      Download that recolored JSON and bundle it locally (per the workflow above). For light/dark support, fetch and
+      bundle two variants — e.g. <code>?color=%23222</code> for light and <code>?color=%23fff</code> for dark.
+    </p>
+
+    <h3>Recolor at runtime (alternative)</h3>
+    <p>
+      If the app must recolor at runtime, use the idiomatic mechanism for your platform’s Lottie player — e.g. runtime
+      color callbacks / dynamic properties, <code>colorFilters</code>, or a JSON preprocessing step that swaps
+      fill/stroke color values before passing the data to the player.
     </p>
 
     <h2>Source &amp; Repository</h2>
