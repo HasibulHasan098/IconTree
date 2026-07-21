@@ -176,6 +176,62 @@ Use manual mode when you already know which icons you want and do not need runti
       <li>Download each icon’s JSON (fetch <code>{baseUrl} + result.url</code>) and bundle it into your app.</li>
       <li>Load the bundled JSON the idiomatic way for your stack and render it with a Lottie player.</li>
     </ol>
+
+    <h2>React — icon-tree-animate (recommended)</h2>
+    <p>
+      If your project uses <strong>React 18+</strong>, install the official <code>icon-tree-animate</code> npm package.
+      It handles icon discovery, local bundling, runtime color control, and 4 playback modes — no manual JSON management
+      needed.
+    </p>
+
+    <h3>Install</h3>
+    <pre><code>npm install icon-tree-animate</code></pre>
+
+    <h3>Add icons (CLI)</h3>
+    <p>Run this once per icon at design time. It searches IconTree, saves the JSON locally, and registers the icon.</p>
+    <pre><code>npx icontree add heart --search "heart"
+npx icontree add arrow-right --search "arrow right"
+npx icontree add arrow-right --search "arrow right" --interactive  # pick from multiple results</code></pre>
+
+    <h3>Use the component</h3>
+    <pre><code>import { Icon } from "icon-tree-animate";
+
+&lt;Icon id="heart" size={48} color="#ff0000" mode="static" /&gt;
+&lt;Icon id="heart" size={48} color="#00ff00" mode="loop" /&gt;
+&lt;Icon id="heart" size={48} color="#0000ff" mode="onClick" onClick={() =&gt; handleClick()} /&gt;
+&lt;Icon id="heart" size={48} color="#ffaa00" mode="hover" /&gt;</code></pre>
+
+    <h3>Props</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>id</code></td><td><code>IconId</code></td><td>required</td><td>Must exist in registry</td></tr>
+          <tr><td><code>size</code></td><td><code>number | string</code></td><td><code>24</code></td><td>Width &amp; height</td></tr>
+          <tr><td><code>color</code></td><td><code>string</code></td><td><code>"currentColor"</code></td><td>Hex, e.g. <code>"#ff0000"</code></td></tr>
+          <tr><td><code>mode</code></td><td><code>"static" | "loop" | "onClick" | "hover"</code></td><td><code>"static"</code></td><td>Playback mode</td></tr>
+          <tr><td><code>onClick</code></td><td><code>() =&gt; void</code></td><td>—</td><td>Fires in onClick mode</td></tr>
+          <tr><td><code>resetAfterPlay</code></td><td><code>boolean</code></td><td><code>true</code></td><td>Reset to frame 0 after playing</td></tr>
+          <tr><td><code>className</code></td><td><code>string</code></td><td>—</td><td>CSS class</td></tr>
+          <tr><td><code>style</code></td><td><code>React.CSSProperties</code></td><td>—</td><td>Inline styles</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Modes</h3>
+    <ul>
+      <li><strong>static</strong> — Frame 0 only. No animation.</li>
+      <li><strong>loop</strong> — Autoplay, infinite.</li>
+      <li><strong>onClick</strong> — Idle at frame 0, plays once on click.</li>
+      <li><strong>hover</strong> — Idle at frame 0, plays once on mouse-enter, finishes on mouse-leave.</li>
+    </ul>
+
+    <h3>How it works</h3>
+    <p><strong>Design-time (CLI):</strong> <code>add-icon.js</code> fetches raw Lottie JSON from the IconTree API and saves it to <code>src/icons/</code>. No colors are applied.</p>
+    <p><strong>Runtime (Component):</strong> The icon JSON is loaded via dynamic import (tree-shakeable), recolored in-memory using the <code>color</code> prop, and rendered via Lottie. Zero network requests. The <code>recolorLottie()</code> function deep-clones the JSON, converts hex to Lottie RGBA float format, walks the layer tree updating fill/stroke, and memoizes by icon + color.</p>
+
     <p>
       The shipped app should <strong>never</strong> call <code>/icon/search</code> at runtime. Selection happens once,
       while you author the code; the final code is local and static.

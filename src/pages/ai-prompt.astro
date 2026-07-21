@@ -1,80 +1,127 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-const baseUrl = 'https://icontree.cosmoscope.workers.dev';
-
 const promptText = `# IconTree Integration
 
-Integrate IconTree Lottie icons into an EXISTING app.
+Integrate IconTree Lottie icons into an existing app. Do not scaffold a new app, icon library, gallery, marketplace, search page, or design system.
 
-## Target
-Framework: [React / Flutter / React Native / etc.]
+Step 0 — Pick your path
+
+| Project type | Path |
+|---|---|
+| React (web) | Use the icon-tree-animate npm package — Path A. Skip Path B entirely. |
+| Flutter / React Native / Android / other | Use the generic API workflow — Path B. |
+
+Path A — React: icon-tree-animate package
+
+Install
+
+Peer deps: react + react-dom (>=18).
+
+\`\`\`
+npm install icon-tree-animate
+\`\`\`
+
+Add icons (CLI, design-time only)
+
+This searches the IconTree API, saves JSON to \`src/icons/<iconId>.json\`, and regenerates \`src/registry.ts\`. Run it once per icon at design time — never at runtime.
+
+\`\`\`
+npx icontree add <iconId> --search "<query>"
+npx icontree add heart --search "heart"
+npx icontree add arrow-right --search "arrow right" --interactive
+# pick from multiple results
+\`\`\`
+
+Use the component
+
+\`\`\`tsx
+import { Icon } from "icon-tree-animate";
+
+<Icon id="heart" size={48} color="#ff0000" mode="static" />
+<Icon id="heart" size={48} color="#00ff00" mode="loop" />
+<Icon id="heart" size={48} color="#0000ff" mode="onClick" onClick={() => handleClick()} />
+<Icon id="heart" size={48} color="#ffaa00" mode="hover" />
+\`\`\`
+
+Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| id | IconId | required | must exist in registry |
+| size | number \\| string | 24 | width/height |
+| color | string | "currentColor" | hex, e.g. "#ff0000" |
+| mode | "static"\\|"loop"\\|"onClick"\\|"hover" | "static" | see below |
+| onClick | () => void | — | fires in onClick mode |
+| resetAfterPlay | boolean | true | reset to frame 0 after playing |
+| className | string | — | |
+| style | React.CSSProperties | — | |
+
+Modes: \`static\` = frame 0 only, no animation · \`loop\` = autoplay, infinite · \`onClick\` = idle at frame 0, plays once on click · \`hover\` = idle at frame 0, plays once on mouse-enter, finishes on mouse-leave.
+
+How it works
+
+Design-time (CLI): add-icon.js fetches raw Lottie JSON, saves to \`src/icons/\`, no color applied.
+Runtime (component): icon JSON loaded via dynamic import (tree-shakeable), recolored in-memory from the \`color\` prop, rendered via Lottie. Zero network requests. \`recolorLottie()\` deep-clones the JSON, converts hex → Lottie RGBA floats, walks the layer tree updating fill/stroke, and memoizes by icon+color.
+
+Integration rules
+
+Wire \`<Icon />\` into existing components only; reuse existing spacing/colors/theme/naming.
+\`color\` prop should read from the app's theme tokens (light/dark), not hardcoded hex, unless the project already hardcodes colors elsewhere.
+Output only the required code — no README, no extra files, no console logs.
+If the user explicitly wants an in-app icon picker/search UI, pause and confirm — that's a different feature from this integration and needs the search API shipped client-side (normally out of scope).
+
+Path B — Non-React (Flutter / React Native / Android / other)
+
+Target (fill in)
+
+Framework: [Flutter / React Native / Android / etc.]
 Component: [component name]
-Lottie library: [lottie-react, lottie_flutter, etc.]
-Local icon path: [e.g. src/assets/icons]
+Lottie library: [lottie_flutter, lottie-react-native, lottie-android, etc.]
+Local icon path: [e.g. assets/icons]
 
-## Rules
-- Integrate into the existing UI only.
-- Do NOT create an icon library, gallery, marketplace, search page, or new design system.
-- Reuse existing components, spacing, colors, theme, and naming.
-- Output only the required code.
-- No README, boilerplate, explanations, or unrelated files.
-- IconTree provides ONLY Lottie (.json). Never use SVG.
+Ground rules
 
-## Design-time icon selection (AI only)
-Base URL:
-${baseUrl}
+Integrate into existing UI only — no new icon library/gallery/marketplace/search page/design system.
+Reuse existing components, spacing, colors, theme, naming.
+Output only required code — no README, boilerplate, explanations, unrelated files, console/print logs.
+IconTree provides only Lottie .json — never SVG.
+
+Design-time icon selection (AI performs this, not the app)
+
+Base URL: https://icontree.cosmoscope.workers.dev
 
 Search:
+\`\`\`
 GET /icon/search?q=<query>&category=<optional>&page=<optional>&pageSize=<optional>
+→ { "results": [ { "url": "/path/icon.json" } ] }
+\`\`\`
 
-Response:
-{
-  "results": [
-    { "url": "/path/icon.json" }
-  ]
-}
+Workflow: search → pick best match → download (see Theming below) → bundle JSON as a local asset → final code references the local asset only, never the live URL. Never ship search/fetch calls inside the app. If the user wants an in-app picker/search UI, confirm first — separate feature.
 
-Workflow:
-1. Search.
-2. Pick the best icon.
-3. Download:
-   ${baseUrl}{url}
-4. Bundle the JSON locally.
-5. Final code must use the local asset only.
+Runtime (production)
 
-Do NOT ship search requests in the app.
+Import the local JSON, render with the project's existing Lottie library, no network requests, no dynamic fetching.
 
-If the user explicitly asks for an in-app icon picker/search UI, ask for confirmation because that is a different feature.
+Theming / icon color
 
-## Runtime (production)
-- Import the local JSON.
-- Render using the existing Lottie library.
-- No network requests.
-- No dynamic fetching.
+IconTree JSON ships with a fixed baked-in fill (often white/black) that won't match app theme. Two options:
 
-## Theme / Icon Color
-IconTree icons ship with a fixed fill color baked into the Lottie JSON (often white or black) that does NOT match the app theme.
-
-You have two options:
-
-1. Server-side recolor (recommended — simplest, no runtime color code):
-   When downloading the icon at design time, append a hex color to the fetch URL:
+1. Server-side recolor (recommended) — at design time, download the pre-colored variant instead of the raw icon:
+   \`\`\`
    GET {baseUrl}/icon/use/<iconname>.json?color=<hex>
-   Example: {baseUrl}/icon/use/arrow-right-bold.json?color=ff0000
-   The leading # is optional — use just the code, e.g. color=ff0000 or color=%23ff0000 both work.
-   The returned JSON already has its fill/stroke recolored — bundle THAT file locally and use it in production.
+   e.g. /icon/use/arrow-right-bold.json?color=ff0000
+   \`\`\`
+   Leading # optional (ff0000 or %23ff0000 both work). Bundle the returned JSON directly — no runtime color code needed. For light/dark support, download + bundle one colored JSON per theme (e.g. \`icon-name.light.json\` / \`icon-name.dark.json\`) and switch assets on active theme.
 
-2. Runtime recolor in the app, using the platform's Lottie color override method (dynamic properties, color filters, or JSON preprocessing that swaps fill/stroke values). Use this only if the app must recolor at runtime.
+2. Runtime recolor — only if the app must recolor dynamically without a rebuild: use the platform Lottie library's native color-override mechanism (dynamic properties, color filters, or JSON preprocessing that swaps fill/stroke). Prefer option 1 otherwise.
 
-Icons must follow the app's light/dark theme. Prefer option 1 and bundle a per-theme colored JSON (e.g. one light, one dark) or recolor once per theme.
+Component requirements
 
-## Component requirements
-- Follow existing architecture.
-- Keep size, loop, autoplay, etc. configurable via props unless the project already hardcodes them.
-- Use proper typing (TS/Dart if applicable).
-- Production-ready.
-- No console logs.`;
+Follow existing project architecture/patterns.
+Keep size, loop, autoplay, etc. configurable via props/params unless the project already hardcodes equivalents.
+Proper typing (TS/Dart/etc. as applicable).
+Production-ready code, no TODOs/placeholders/console logs.`;
 ---
 
 <Layout title="IconTree - AI Prompt">
@@ -109,8 +156,8 @@ Icons must follow the app's light/dark theme. Prefer option 1 and bundle a per-t
       <article class="lang-card">
         <h3>How to Add It</h3>
         <p>
-          Paste the prompt first, then add one short line about your stack and target screen, like “Use React on the
-          settings page” or “Use Android Kotlin in the onboarding screen”.
+          Paste the prompt first, then add one short line about your stack and target screen, like "Use React on the
+          settings page" or "Use Android Kotlin in the onboarding screen".
         </p>
       </article>
     </section>
